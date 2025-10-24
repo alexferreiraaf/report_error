@@ -1,0 +1,107 @@
+{
+  "entities": {
+    "ErrorReport": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ErrorReport",
+      "type": "object",
+      "description": "Represents an error report submitted by a technician.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the error report."
+        },
+        "clientName": {
+          "type": "string",
+          "description": "Name of the client affected by the error."
+        },
+        "technicianName": {
+          "type": "string",
+          "description": "Name of the technician who reported the error."
+        },
+        "errorDate": {
+          "type": "string",
+          "description": "Date when the error occurred.",
+          "format": "date-time"
+        },
+        "reportText": {
+          "type": "string",
+          "description": "Detailed description of the error, steps to reproduce, and the impact on the client."
+        },
+        "mediaUrl": {
+          "type": "string",
+          "description": "URL of the uploaded media file (image or video) associated with the error report.",
+          "format": "uri"
+        },
+        "zipUrl": {
+          "type": "string",
+          "description": "URL of the uploaded zipped database file associated with the error report.",
+          "format": "uri"
+        },
+        "reportedByUserId": {
+          "type": "string",
+          "description": "Reference to the User who submitted the report. (Relationship: User 1:N ErrorReport)"
+        },
+        "generatedAt": {
+          "type": "string",
+          "description": "The date and time when the error report was generated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "clientName",
+        "technicianName",
+        "errorDate",
+        "reportText",
+        "reportedByUserId",
+        "generatedAt"
+      ]
+    },
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the error reporting system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user."
+        }
+      },
+      "required": [
+        "id"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/artifacts/{appId}/public/data/error_reports/{errorReportId}",
+        "definition": {
+          "entityName": "ErrorReport",
+          "schema": {
+            "$ref": "#/backend/entities/ErrorReport"
+          },
+          "description": "Stores error reports submitted by technicians. Anyone can submit. The `appId` parameter allows for separation of error reports from different applications if needed.",
+          "params": [
+            {
+              "name": "appId",
+              "description": "The unique identifier of the application or project."
+            },
+            {
+              "name": "errorReportId",
+              "description": "The unique identifier for the error report document."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "Based on the requirements, the proposed Firestore structure focuses on simplicity, security, and scalability, leveraging path-based ownership for managing error reports. All reports are stored under a common path to allow secure list operations and simplified security rules.\n\n**Authorization Independence:**\n\n*   Since all users are anonymous, there is no need to denormalize authorization data into documents. Instead, ownership is implicitly managed by the path `/artifacts/{appId}/public/data/error_reports/{errorReportId}`.\n\n**Structural Segregation:**\n\n*   All error reports, regardless of the submitter, are stored in the same collection (`/artifacts/{appId}/public/data/error_reports`). This ensures a homogeneous security posture where all documents in the collection share the same access requirements.\n\n**Access Modeling:**\n\n*   The application employs a path-based ownership model. Any authenticated user (even anonymously) can create error reports.\n\n**QAPs (Rules are not Filters):**\n\n*   The flat structure of `/artifacts/{appId}/public/data/error_reports/{errorReportId}` allows listing all error reports securely. Security rules can easily ensure that only authenticated users can create reports.\n\n**Additional Considerations:**\n\n*   The path includes `appId` to facilitate multi-tenancy or project separation if needed in the future."
+  }
+}
