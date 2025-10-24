@@ -2,8 +2,8 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // A pasta error_reports e seus subdiretórios (midia, banco_de_dados)
-    // permitem leitura e escrita para qualquer usuário autenticado.
+    // Permite que qualquer usuário autenticado (incluindo anônimos) leia e envie arquivos
+    // na pasta de relatórios de erro e suas subpastas.
     match /error_reports/{allPaths=**} {
       allow read, write: if request.auth != null;
     }
