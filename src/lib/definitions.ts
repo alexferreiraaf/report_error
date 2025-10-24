@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 const ACCEPTED_MEDIA_TYPES = [
   "image/jpeg",
   "image/jpg",
@@ -16,7 +16,7 @@ const ACCEPTED_ZIP_TYPES = ["application/zip", "application/x-zip-compressed"];
 const fileSchema = z
   .any()
   .refine((file) => file?.size, { message: 'Arquivo é obrigatório' })
-  .refine((file) => file.size <= MAX_FILE_SIZE, `O tamanho máximo do arquivo é 25MB.`)
+  .refine((file) => file.size <= MAX_FILE_SIZE, `O tamanho máximo do arquivo é 100MB.`)
   .optional()
   .nullable();
 
