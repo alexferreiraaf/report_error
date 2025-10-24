@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, serverTimestamp } from 'firebase/firestore';
 
 import { reportSchema } from '@/lib/definitions';
 import { useFirebase } from '@/firebase';
@@ -26,6 +26,9 @@ import { AlertTriangle, Clock, File, Loader2, Send } from 'lucide-react';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { getStorage } from 'firebase/storage';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
+
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
@@ -35,15 +38,32 @@ async function uploadFile(
 ): Promise<string | null> {
   if (!file || file.size === 0) return null;
 
-  const storage = getStorage();
-  const uniqueId = Date.now();
-  const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
-  const fileRef = ref(storage, filePath);
-
-  const snapshot = await uploadBytes(fileRef, file);
-  const downloadUrl = await getDownloadURL(snapshot.ref);
-
-  return downloadUrl;
+  try {
+    const storage = getStorage();
+    const uniqueId = Date.now();
+    const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
+    const fileRef = ref(storage, filePath);
+  
+    const snapshot = await uploadBytes(fileRef, file);
+    const downloadUrl = await getDownloadURL(snapshot.ref);
+  
+    return downloadUrl;
+  } catch (error) {
+    // Re-throw storage errors as permission errors to be caught by the global handler
+    const permissionError = new FirestorePermissionError({
+      path: `error_reports/${folder}`,
+      operation: 'write', // 'write' covers create/update in storage rules
+      requestResourceData: {
+        name: file.name,
+        size: file.size,
+        contentType: file.type,
+      },
+    });
+    errorEmitter.emit('permission-error', permissionError);
+    // throw error; // Re-throw to be caught by the calling function's catch block
+    // We are emitting, so let's throw the original error to be displayed in the form
+    throw error;
+  }
 }
 
 export function ErrorReportForm() {
@@ -90,6 +110,7 @@ export function ErrorReportForm() {
     }
 
     try {
+      // These will now throw an error if upload fails, which is caught below.
       const mediaUrl = await uploadFile(data.mediaFile as File, 'midia');
       const zipUrl = await uploadFile(data.zipFile as File, 'banco_de_dados');
       
@@ -100,7 +121,7 @@ export function ErrorReportForm() {
       
       const reportsCollectionRef = collection(firestore, `artifacts/${appId}/public/data/error_reports`);
 
-      await addDoc(reportsCollectionRef, {
+      const reportData = {
         clientName: data.clientName,
         technicianName: data.technicianName,
         errorDate: data.errorDate,
@@ -109,8 +130,10 @@ export function ErrorReportForm() {
         zipUrl: zipUrl || null,
         reportedByUserId: data.reportedByUserId,
         generatedAt: serverTimestamp(),
-      });
-
+      };
+      
+      // Use the non-blocking add with proper error handling
+      addDocumentNonBlocking(reportsCollectionRef, reportData);
 
       toast({
         title: 'Sucesso!',
@@ -121,11 +144,15 @@ export function ErrorReportForm() {
     } catch (e: unknown) {
       const error = e as Error;
       console.error('Erro ao enviar relatório:', error);
-      setFormError(`Falha ao enviar o relatório. Erro: ${error.message}`);
+      const errorMessage = error.message.includes('permission-denied') 
+        ? 'Permissão negada. Verifique as regras de segurança do Firebase.'
+        : `Falha ao enviar o relatório. Erro: ${error.message}`;
+
+      setFormError(errorMessage);
       toast({
         variant: 'destructive',
         title: 'Erro no Envio',
-        description: `Falha ao enviar o relatório. Erro: ${error.message}`,
+        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
