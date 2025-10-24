@@ -1,32 +1,51 @@
 /**
- * @file Firestore Security Rules
- * @core-philosophy This ruleset allows any signed-in user (even anonymously) to create error reports under a public collection grouped by `appId`. All error reports are publicly readable.
- * @data-structure All error reports are stored under `/artifacts/{appId}/public/data/error_reports/{errorReportId}`. The `appId` allows for separation of error reports from different applications if needed.
- * @key-security-decisions All authenticated users can create, read, update, and delete error reports.
+ * @file Firebase Security Rules for Firestore.
+ *
+ * @Core Philosophy: This ruleset allows any authenticated user (including anonymous)
+ * to create error reports under a specific application ID. All error reports are
+ * stored in a public collection and readable by anyone. Updates and deletes are
+ * disallowed to maintain data integrity.
+ *
+ * @Data Structure: Error reports are stored under
+ * /artifacts/{appId}/public/data/error_reports/{errorReportId}.
+ * The `appId` allows separation of error reports from different applications.
+ *
+ * @Key Security Decisions:
+ * - Anonymous users are allowed to submit error reports.
+ * - No user roles are defined.
+ * - Updates and deletes are disallowed on error reports after creation to prevent tampering.
+ *
+ * @Denormalization for Authorization: Not applicable. Anonymous authentication is used.
+ *
+ * @Structural Segregation: All error reports are stored in a single public collection.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows any signed-in user to create, read, update, and delete error reports under a public collection grouped by `appId`.
+     * @description Allows any authenticated user to create error reports under a specific application ID.
+     * Error reports are publicly readable. Updates and deletes are disallowed.
      * @path /artifacts/{appId}/public/data/error_reports/{errorReportId}
-     * @allow (create) - Any signed-in user can create an error report with a unique ID.
-     * @allow (get) - Any user can retrieve an error report.
-     * @allow (list) - Any user can list error reports.
-     * @allow (update) - Any signed-in user can update an existing error report.
-     * @allow (delete) - Any signed-in user can delete an existing error report.
+     * @allow (create) - An authenticated user can create an error report.
+     *   request.auth.uid: "user123"
+     *   request.resource.data: { clientName: "Client A", technicianName: "Tech B", errorDate: "2024-01-01", reportText: "Error description", reportedByUserId: "user123", generatedAt: "2024-01-01", id: "errorReport123" }
+     * @allow (get, list) - Any user can read error reports.
+     * @deny (update) - No one can update an error report.
+     * @deny (delete) - No one can delete an error report.
      * @deny (create) - An unauthenticated user cannot create an error report.
-     * @principle Allows any authenticated user (even anonymously) to create, read, update, and delete error reports under a public collection grouped by `appId`.
+     *   request.auth.uid: null
+     *   request.resource.data: { clientName: "Client A", technicianName: "Tech B", errorDate: "2024-01-01", reportText: "Error description", reportedByUserId: "null", generatedAt: "2024-01-01", id: "errorReport123" }
+     * @principle Allows any authenticated user to submit a report and enforces immutable data.
      */
     match /artifacts/{appId}/public/data/error_reports/{errorReportId} {
       allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update: if isSignedIn() && resource != null;
-      allow delete: if isSignedIn() && resource != null;
+      allow create: if isSignedIn() && request.resource.data.reportedByUserId == request.auth.uid && request.resource.data.id == errorReportId;
+      allow update: if false;
+      allow delete: if false;
     }
 
-    // Define helper functions
+    // Helper function to check if a user is signed in.
     function isSignedIn() {
       return request.auth != null;
     }
