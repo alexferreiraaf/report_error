@@ -8,7 +8,7 @@ import { useFormState } from 'react-dom';
 import { signInAnonymously } from 'firebase/auth';
 
 import { reportSchema } from '@/lib/definitions';
-import { auth } from '@/lib/firebase-client';
+import { getFirebaseInstances } from '@/lib/firebase-client';
 import { submitReport, type FormState } from '@/app/actions';
 
 import { useToast } from '@/hooks/use-toast';
@@ -55,16 +55,8 @@ export function ErrorReportForm() {
 
   useEffect(() => {
     const setupAuth = async () => {
-      if (!auth) {
-        toast({
-          variant: 'destructive',
-          title: 'Erro de Configuração',
-          description: 'O Firebase não foi configurado corretamente.',
-        });
-        setIsAuthReady(true);
-        return;
-      }
       try {
+        const { auth } = getFirebaseInstances();
         const userCredential = await signInAnonymously(auth);
         const uid = userCredential.user.uid;
         setUserId(uid);
