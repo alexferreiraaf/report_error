@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useActionState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useFormState } from 'react-dom';
 import { signInAnonymously } from 'firebase/auth';
 
 import { reportSchema } from '@/lib/definitions';
@@ -34,7 +33,7 @@ export function ErrorReportForm() {
   const [userId, setUserId] = useState<string | null>(null);
 
   const initialState: FormState = { success: false, message: '' };
-  const [state, formAction] = useFormState(submitReport, initialState);
+  const [state, formAction] = useActionState(submitReport, initialState);
   const formRef = useRef<HTMLFormElement>(null);
   
   const form = useForm<ReportFormValues>({
