@@ -1,66 +1,63 @@
 /**
- * @fileOverview This ruleset governs access to error reports stored in Firestore.
+ * @fileoverview Firestore Security Rules for the error reporting system.
  *
  * Core Philosophy:
- *   This ruleset allows any authenticated user (including anonymous) to create, read, and list error reports.
- *   Update and delete operations are disallowed. This is a public read, append-only collection.
+ * This ruleset allows any authenticated user (including anonymous) to create, read, and list error reports within a specific application.
  *
  * Data Structure:
- *   Error reports are stored under `/artifacts/{appId}/public/data/error_reports/{errorReportId}`.
- *   The `appId` allows for separating reports from different applications.
+ * Error reports are stored in the `/artifacts/{appId}/public/data/error_reports/{errorReportId}` collection.
  *
  * Key Security Decisions:
- *   - Anonymous users are allowed to create error reports, reflecting the "anyone can submit" requirement.
- *   - Listing error reports is allowed for all users.
- *   - Update and Delete operations are denied to all users to make the reports append-only.
+ * - Any authenticated user can create error reports.
+ * - Any authenticated user can read error reports.
+ * - All reports are stored under a common path to allow secure list operations and simplified security rules.
  *
  * Denormalization for Authorization:
- *   None needed. The rules rely on the implicit relationship established by the Firestore path.
- *
- * Structural Segregation:
- *   All error reports, regardless of the submitter, are stored in the same collection.
+ *  - Not required. All authenticated users can create error reports.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Controls access to error reports. Allows authenticated users to create, read, and list error reports. Update and delete are forbidden.
+     * @description Allows any authenticated user to create, read, update, and delete error reports.
      * @path /artifacts/{appId}/public/data/error_reports/{errorReportId}
-     * @allow (create) - Any authenticated user can create a new error report.
-     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "id": "report456", "clientName": "Acme Corp", "technicianName": "John Doe", "errorDate": "2024-01-01T12:00:00Z", "reportText": "Failed to load module.", "reportedByUserId": "user123", "generatedAt": "2024-01-01T12:00:00Z" } } }
-     * @allow (get, list) - Any user can read any error report.
-     *   Request: { "auth": { "uid": "user123" } }
-     * @deny (update) - No user can update an error report.
-     *   Request: { "auth": { "uid": "user123" }, "resource": { "data": { "id": "report456", "clientName": "Acme Corp", "technicianName": "John Doe", "errorDate": "2024-01-01T12:00:00Z", "reportText": "Updated error description.", "reportedByUserId": "user123", "generatedAt": "2024-01-01T12:00:00Z" } } }
-     * @deny (delete) - No user can delete an error report.
-     *   Request: { "auth": { "uid": "user123" } }
-     * @principle Allows any authenticated user to create reports, but restricts updates and deletes. Provides public read access to all error reports.
+     * @allow (create) - Any authenticated user can create an error report.
+     *          Example: request.auth.uid != null
+     * @allow (get) - Any authenticated user can read an error report.
+     *          Example: request.auth.uid != null
+     * @allow (list) - Any authenticated user can list error reports.
+     *          Example: request.auth.uid != null
+     * @allow (update) - Only the user who created the report can update it.
+     *          Example: request.auth.uid != null
+     * @allow (delete) - Only the user who created the report can delete it.
+     *          Example: request.auth.uid != null
+     * @deny (create) - An unauthenticated user cannot create an error report.
+     *          Example: request.auth.uid == null
+     * @deny (update) - Updating a non-existent document.
+     *          Example: resource == null
+     * @deny (delete) - Deleting a non-existent document.
+     *          Example: resource == null
+     * @principle Allows any authenticated user to perform operations on error reports.
      */
     match /artifacts/{appId}/public/data/error_reports/{errorReportId} {
-      allow get, list: if true;
-      allow create: if isSignedIn();
-      allow update, delete: if false;
-    }
+      // Allow anyone to read error reports
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
 
-    /**
-     * @description Placeholder match for /users/{userId} to deny all access.
-     * @path /users/{userId}
-     * @allow None
-     * @deny create, get, list, update, delete.  All operations are denied.
-     * @principle This collection is not used, so all access is denied.
-     */
-     match /users/{userId} {
-        allow get: if false;
-        allow list: if false;
-        allow create: if false;
-        allow update: if false;
-        allow delete: if false;
-    }
+      // Allow authenticated users to create error reports
+      allow create: if isSignedIn() && request.resource.data.reportedByUserId == request.auth.uid && request.resource.data.id == errorReportId;
 
+      // Allow authenticated users to update error reports
+      allow update: if isSignedIn() && resource.data.reportedByUserId == request.auth.uid && resource != null && request.resource.data.id == resource.data.id;
 
-    function isSignedIn() {
-      return request.auth != null;
+      // Allow authenticated users to delete error reports
+      allow delete: if isSignedIn() && resource.data.reportedByUserId == request.auth.uid && resource != null;
     }
   }
+
+  function isSignedIn() {
+    return request.auth != null;
+  }
+
 }
