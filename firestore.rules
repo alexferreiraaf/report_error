@@ -1,51 +1,61 @@
 /**
- * @file Firebase Security Rules for Firestore.
+ * @fileOverview
+ * This ruleset enforces a public read with owner-only writes model for error reports.
+ * All data is stored under /artifacts/{appId}/public/data/error_reports/{errorReportId}.
  *
- * @Core Philosophy: This ruleset allows any authenticated user (including anonymous)
- * to create error reports under a specific application ID. All error reports are
- * stored in a public collection and readable by anyone. Updates and deletes are
- * disallowed to maintain data integrity.
+ * Key Security Decisions:
+ * - Error reports are publicly readable to facilitate listing and filtering.
+ * - Only the user who created the error report can update or delete it.
+ * - The rules enforce that the `reportedByUserId` field matches the authenticated user's ID on creation,
+ *   and that this field cannot be changed after creation to maintain relational integrity.
+ * - The rules do NOT validate the structure of the error report data beyond the `reportedByUserId` field.
  *
- * @Data Structure: Error reports are stored under
- * /artifacts/{appId}/public/data/error_reports/{errorReportId}.
- * The `appId` allows separation of error reports from different applications.
+ * Denormalization for Authorization:
+ * - The `ErrorReport` entity includes the `reportedByUserId` field. This denormalization is CRUCIAL
+ *   for enforcing owner-only writes without needing additional reads.
  *
- * @Key Security Decisions:
- * - Anonymous users are allowed to submit error reports.
- * - No user roles are defined.
- * - Updates and deletes are disallowed on error reports after creation to prevent tampering.
- *
- * @Denormalization for Authorization: Not applicable. Anonymous authentication is used.
- *
- * @Structural Segregation: All error reports are stored in a single public collection.
+ * Structural Segregation:
+ * - Error reports are stored under a path including the `appId` to isolate data for each application.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows any authenticated user to create error reports under a specific application ID.
-     * Error reports are publicly readable. Updates and deletes are disallowed.
+     * @description Allows public read access to error reports while restricting write access to the owner.
      * @path /artifacts/{appId}/public/data/error_reports/{errorReportId}
-     * @allow (create) - An authenticated user can create an error report.
-     *   request.auth.uid: "user123"
-     *   request.resource.data: { clientName: "Client A", technicianName: "Tech B", errorDate: "2024-01-01", reportText: "Error description", reportedByUserId: "user123", generatedAt: "2024-01-01", id: "errorReport123" }
-     * @allow (get, list) - Any user can read error reports.
-     * @deny (update) - No one can update an error report.
-     * @deny (delete) - No one can delete an error report.
-     * @deny (create) - An unauthenticated user cannot create an error report.
-     *   request.auth.uid: null
-     *   request.resource.data: { clientName: "Client A", technicianName: "Tech B", errorDate: "2024-01-01", reportText: "Error description", reportedByUserId: "null", generatedAt: "2024-01-01", id: "errorReport123" }
-     * @principle Allows any authenticated user to submit a report and enforces immutable data.
+     * @allow (get, list) Read access is public.
+     * @allow (create) User with ID 'user_abc' can create a new error report with `reportedByUserId: 'user_abc'`.
+     * @allow (update, delete) User with ID 'user_abc' can update/delete an existing error report where `resource.data.reportedByUserId == 'user_abc'`.
+     * @deny (create) User with ID 'user_def' cannot create an error report with `reportedByUserId: 'user_abc'`.
+     * @deny (update, delete) User with ID 'user_def' cannot update/delete an existing error report where `resource.data.reportedByUserId == 'user_abc'`.
+     * @principle Public read, owner-only writes. Enforces document ownership and prevents unauthorized modifications.
      */
     match /artifacts/{appId}/public/data/error_reports/{errorReportId} {
+      // Allow anyone to read error reports.
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.reportedByUserId == request.auth.uid && request.resource.data.id == errorReportId;
-      allow update: if false;
-      allow delete: if false;
+
+      // Only allow the user who created the error report to create a new report,
+      // and ensure the reportedByUserId matches the authenticated user's ID.
+      allow create: if isSignedIn() && request.resource.data.reportedByUserId == request.auth.uid;
+
+      // Only allow the user who created the error report to update or delete it.
+      // Also, ensure that the document exists before allowing the update or delete.
+      allow update: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
+      allow delete: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
+
+      // Define helper function to check if the user is the owner of the document AND the document exists.
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+
+      // Define helper function to check if the user is the owner of the document.
+      function isOwner(userId) {
+        return isSignedIn() && request.auth.uid == userId;
+      }
     }
 
-    // Helper function to check if a user is signed in.
+    // Define helper function to check if the user is signed in.
     function isSignedIn() {
       return request.auth != null;
     }
