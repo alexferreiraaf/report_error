@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useActionState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState, useEffect, useRef } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { signInAnonymously } from 'firebase/auth';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 import { reportSchema } from '@/lib/definitions';
-import { getFirebaseInstances } from '@/lib/firebase-client';
-import { submitReport, type FormState } from '@/app/actions';
-
+import { useFirebase } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,18 +23,36 @@ import {
 } from '@/components/ui/form';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Clock, File, Loader2, Send } from 'lucide-react';
+import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { getStorage } from 'firebase/storage';
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
+async function uploadFile(
+  file: File,
+  folder: string
+): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+
+  const storage = getStorage();
+  const uniqueId = Date.now();
+  const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
+  const fileRef = ref(storage, filePath);
+
+  const snapshot = await uploadBytes(fileRef, file);
+  const downloadUrl = await getDownloadURL(snapshot.ref);
+
+  return downloadUrl;
+}
+
 export function ErrorReportForm() {
   const { toast } = useToast();
-  const [isAuthReady, setIsAuthReady] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  const initialState: FormState = { success: false, message: '' };
-  const [state, formAction] = useActionState(submitReport, initialState);
+  const { auth, firestore, user, isUserLoading } = useFirebase();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
-  
+
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
@@ -53,44 +70,69 @@ export function ErrorReportForm() {
   const zipFile = form.watch('zipFile');
 
   useEffect(() => {
-    const setupAuth = async () => {
-      try {
-        const { auth } = getFirebaseInstances();
-        const userCredential = await signInAnonymously(auth);
-        const uid = userCredential.user.uid;
-        setUserId(uid);
-        form.setValue('reportedByUserId', uid);
-      } catch (e) {
-        toast({
-          variant: 'destructive',
-          title: 'Falha na Autenticação',
-          description: (e as Error).message,
-        });
-      } finally {
-        setIsAuthReady(true);
-      }
-    };
-    setupAuth();
-  }, [toast, form]);
+    if (!isUserLoading && !user) {
+      initiateAnonymousSignIn(auth);
+    }
+    if (user) {
+      form.setValue('reportedByUserId', user.uid);
+    }
+  }, [user, isUserLoading, auth, form]);
 
-  useEffect(() => {
-    if (state?.success) {
+
+  const onSubmit: SubmitHandler<ReportFormValues> = async (data) => {
+    setIsSubmitting(true);
+    setFormError(null);
+
+    if (!firestore) {
+      setFormError("O serviço de banco de dados não está disponível.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      const mediaUrl = await uploadFile(data.mediaFile as File, 'midia');
+      const zipUrl = await uploadFile(data.zipFile as File, 'banco_de_dados');
+      
+      const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+      if (!appId) {
+        throw new Error('Firebase App ID is not configured.');
+      }
+      
+      const reportsCollectionRef = collection(firestore, `artifacts/${appId}/public/data/error_reports`);
+
+      await addDoc(reportsCollectionRef, {
+        clientName: data.clientName,
+        technicianName: data.technicianName,
+        errorDate: data.errorDate,
+        reportText: data.reportText,
+        mediaUrl: mediaUrl || null,
+        zipUrl: zipUrl || null,
+        reportedByUserId: data.reportedByUserId,
+        generatedAt: serverTimestamp(),
+      });
+
+
       toast({
         title: 'Sucesso!',
-        description: state.message,
+        description: '✅ Relatório de erro enviado com sucesso!',
       });
       form.reset();
       formRef.current?.reset();
-    } else if (state?.message && !state.success) {
+    } catch (e: unknown) {
+      const error = e as Error;
+      console.error('Erro ao enviar relatório:', error);
+      setFormError(`Falha ao enviar o relatório. Erro: ${error.message}`);
       toast({
         variant: 'destructive',
         title: 'Erro no Envio',
-        description: state.message,
+        description: `Falha ao enviar o relatório. Erro: ${error.message}`,
       });
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [state, form, toast]);
-
-  if (!isAuthReady) {
+  };
+  
+  if (isUserLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <Loader2 className="mr-2 h-6 w-6 animate-spin" />
@@ -101,14 +143,14 @@ export function ErrorReportForm() {
 
   return (
     <Form {...form}>
-      {state && !state.success && state.message && !state.errors && (
+      {formError && (
          <Alert variant="destructive" className="mb-4">
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Erro</AlertTitle>
-            <AlertDescription>{state.message}</AlertDescription>
+            <AlertDescription>{formError}</AlertDescription>
          </Alert>
       )}
-      <form ref={formRef} action={formAction} className="space-y-6">
+      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
             control={form.control}
             name="reportedByUserId"
@@ -219,8 +261,8 @@ export function ErrorReportForm() {
             </div>
         </div>
 
-        <Button type="submit" className="w-full rounded-full" size="lg" disabled={form.formState.isSubmitting || !isAuthReady}>
-          {form.formState.isSubmitting ? (
+        <Button type="submit" className="w-full rounded-full" size="lg" disabled={isSubmitting || isUserLoading || !user}>
+          {isSubmitting ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
               Enviando...
