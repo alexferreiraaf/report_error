@@ -4,7 +4,7 @@ import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { AlertTriangle, Download, FileText, Image, Video, FileZip } from 'lucide-react';
+import { AlertTriangle, Download, FileText, Image, Video, FileArchive } from 'lucide-react';
 import { Button } from './ui/button';
 import { format } from 'date-fns';
 
@@ -54,7 +54,7 @@ function ReportItem({ report }: { report: ErrorReport }) {
                     {report.zipUrl && (
                         <Button asChild variant="outline" size="sm">
                             <a href={report.zipUrl} target="_blank" rel="noopener noreferrer">
-                                <FileZip className="mr-2" />
+                                <FileArchive className="mr-2" />
                                 Baixar ZIP
                                 <Download className="ml-2 h-4 w-4" />
                             </a>
