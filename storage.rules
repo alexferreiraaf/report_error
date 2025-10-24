@@ -1,0 +1,14 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Permite o upload de arquivos na pasta 'error_reports' para qualquer usuário autenticado.
+    // Isso é seguro porque o aplicativo usa autenticação anônima, então todos os usuários
+    // que tentam fazer upload terão um `request.auth` não nulo.
+    // O acesso de leitura não é permitido publicamente por padrão para proteger os dados.
+    match /error_reports/{allPaths=**} {
+      allow read: if false; // Ninguém pode ler diretamente, apenas através de URLs de download com token.
+      allow write: if request.auth != null;
+    }
+  }
+}
