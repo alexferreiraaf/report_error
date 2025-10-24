@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, getStorage } from 'firebase/storage';
 import { collection, serverTimestamp } from 'firebase/firestore';
 
 import { reportSchema } from '@/lib/definitions';
@@ -25,7 +25,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Clock, File, Loader2, Send } from 'lucide-react';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { getStorage } from 'firebase/storage';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { errorEmitter } from '@/firebase/error-emitter';
 
@@ -37,9 +36,8 @@ async function uploadFile(
   folder: string
 ): Promise<string | null> {
   if (!file || file.size === 0) return null;
-
+  const storage = getStorage();
   try {
-    const storage = getStorage();
     const uniqueId = Date.now();
     const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
     const fileRef = ref(storage, filePath);
@@ -49,10 +47,9 @@ async function uploadFile(
   
     return downloadUrl;
   } catch (error) {
-    // Re-throw storage errors as permission errors to be caught by the global handler
     const permissionError = new FirestorePermissionError({
       path: `error_reports/${folder}`,
-      operation: 'write', // 'write' covers create/update in storage rules
+      operation: 'write', 
       requestResourceData: {
         name: file.name,
         size: file.size,
@@ -60,8 +57,6 @@ async function uploadFile(
       },
     });
     errorEmitter.emit('permission-error', permissionError);
-    // throw error; // Re-throw to be caught by the calling function's catch block
-    // We are emitting, so let's throw the original error to be displayed in the form
     throw error;
   }
 }
@@ -103,16 +98,15 @@ export function ErrorReportForm() {
     setIsSubmitting(true);
     setFormError(null);
 
-    if (!firestore) {
-      setFormError("O serviço de banco de dados não está disponível.");
+    if (!firestore || !user) {
+      setFormError("O serviço de banco de dados ou autenticação não está disponível.");
       setIsSubmitting(false);
       return;
     }
 
     try {
-      // These will now throw an error if upload fails, which is caught below.
-      const mediaUrl = await uploadFile(data.mediaFile as File, 'midia');
-      const zipUrl = await uploadFile(data.zipFile as File, 'banco_de_dados');
+      const mediaUrl = data.mediaFile ? await uploadFile(data.mediaFile, 'midia') : null;
+      const zipUrl = data.zipFile ? await uploadFile(data.zipFile, 'banco_de_dados') : null;
       
       const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
       if (!appId) {
@@ -126,13 +120,12 @@ export function ErrorReportForm() {
         technicianName: data.technicianName,
         errorDate: data.errorDate,
         reportText: data.reportText,
-        mediaUrl: mediaUrl || null,
-        zipUrl: zipUrl || null,
-        reportedByUserId: data.reportedByUserId,
+        mediaUrl: mediaUrl,
+        zipUrl: zipUrl,
+        reportedByUserId: user.uid, // Use user.uid directly for security
         generatedAt: serverTimestamp(),
       };
       
-      // Use the non-blocking add with proper error handling
       addDocumentNonBlocking(reportsCollectionRef, reportData);
 
       toast({
@@ -140,13 +133,21 @@ export function ErrorReportForm() {
         description: '✅ Relatório de erro enviado com sucesso!',
       });
       form.reset();
-      formRef.current?.reset();
+      // Also reset the underlying form element to clear file inputs
+      if(formRef.current) {
+        formRef.current.reset();
+      }
+      // Manually clear file state in react-hook-form
+      form.setValue('mediaFile', undefined);
+      form.setValue('zipFile', undefined);
+
     } catch (e: unknown) {
       const error = e as Error;
       console.error('Erro ao enviar relatório:', error);
+      // The permission error is already emitted by uploadFile, here we just update the UI
       const errorMessage = error.message.includes('permission-denied') 
-        ? 'Permissão negada. Verifique as regras de segurança do Firebase.'
-        : `Falha ao enviar o relatório. Erro: ${error.message}`;
+        ? 'Permissão negada. Verifique as regras de segurança do Firebase Storage.'
+        : `Falha ao enviar o arquivo. Erro: ${error.message}`;
 
       setFormError(errorMessage);
       toast({
@@ -233,7 +234,7 @@ export function ErrorReportForm() {
             <FormItem className="pt-4 border-t border-border">
               <FormLabel>Anexo de Mídia (Foto ou Vídeo)</FormLabel>
               <FormControl>
-                <Input type="file" accept="image/*,video/*" onChange={(e) => onChange(e.target.files?.[0])} {...rest}
+                <Input type="file" accept="image/*,video/*" onChange={(e) => onChange(e.target.files ? e.target.files[0] : undefined)} {...rest}
                 className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                 />
               </FormControl>
@@ -250,7 +251,7 @@ export function ErrorReportForm() {
             <FormItem className="pt-4 border-t border-border">
               <FormLabel>Arquivo Zipado do Banco de Dados (.zip)</FormLabel>
               <FormControl>
-                <Input type="file" accept=".zip,application/zip,application/x-zip-compressed" onChange={(e) => onChange(e.target.files?.[0])} {...rest} 
+                <Input type="file" accept=".zip,application/zip,application/x-zip-compressed" onChange={(e) => onChange(e.target.files ? e.target.files[0] : undefined)} {...rest} 
                   className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                 />
               </FormControl>
@@ -305,3 +306,5 @@ export function ErrorReportForm() {
     </Form>
   );
 }
+
+    
