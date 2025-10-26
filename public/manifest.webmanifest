@@ -1,0 +1,16 @@
+{
+  "name": "Error Lookout",
+  "short_name": "ErrorLookout",
+  "description": "Submit detailed error reports for system issues.",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2463eb"
+}

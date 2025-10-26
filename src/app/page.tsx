@@ -10,8 +10,8 @@ import { FileText } from 'lucide-react';
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-muted/20 flex items-center justify-center">
-      <div className="container mx-auto p-4 py-8 md:py-12 lg:py-16 max-w-4xl">
+    <div className="relative min-h-screen bg-muted/20 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-4xl py-8 md:py-12">
         <ThemeToggle />
         <main className="flex flex-col items-center gap-8 w-full">
           <Card className="shadow-2xl w-full">
@@ -35,7 +35,7 @@ export default function Home() {
                 Ver Relatórios Enviados
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+            <DialogContent className="max-w-4xl w-[95vw] h-[90vh] flex flex-col">
               <DialogHeader>
                 <DialogTitle className="text-2xl font-bold tracking-tight text-primary">Relatórios Enviados</DialogTitle>
                 <DialogDescription>
