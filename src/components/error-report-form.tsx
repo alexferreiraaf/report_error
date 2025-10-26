@@ -5,7 +5,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ref, uploadBytes, getDownloadURL, getStorage } from 'firebase/storage';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 
 import { reportSchema } from '@/lib/definitions';
 import { useFirebase } from '@/firebase';
@@ -24,7 +24,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Clock, File, Loader2, Send } from 'lucide-react';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
@@ -111,7 +110,7 @@ export function ErrorReportForm() {
         generatedAt: serverTimestamp(),
       };
       
-      addDocumentNonBlocking(reportsCollectionRef, reportData);
+      await addDoc(reportsCollectionRef, reportData);
 
       toast({
         title: 'Sucesso!',
@@ -130,9 +129,12 @@ export function ErrorReportForm() {
       const error = e as Error;
       console.error('Erro ao enviar relatório:', error);
       
-      const errorMessage = (error.message && error.message.includes('storage/unauthorized'))
-        ? 'Permissão negada para enviar o arquivo. Verifique as regras de segurança do Firebase Storage.'
-        : `Falha ao enviar o arquivo. Tente novamente. (${error.message})`;
+      let errorMessage = `Falha ao enviar o relatório. Tente novamente. (${error.message})`;
+      if (error.message.includes('storage/unauthorized')) {
+        errorMessage = 'Permissão negada para enviar o arquivo. Verifique as regras de segurança do Firebase Storage.';
+      } else if (error.message.includes('permission-denied') || error.message.includes('insufficient permissions')) {
+        errorMessage = 'Permissão negada para salvar o relatório no banco de dados. Verifique as regras de segurança do Firestore.';
+      }
 
       setFormError(errorMessage);
       toast({
@@ -291,3 +293,5 @@ export function ErrorReportForm() {
     </Form>
   );
 }
+
+    
