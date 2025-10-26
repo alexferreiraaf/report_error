@@ -32,6 +32,8 @@ import {
   
 import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 interface ErrorReport {
   id: string;
@@ -49,7 +51,6 @@ function ReportItem({ report }: { report: ErrorReport }) {
     const { firestore } = useFirebase();
     const { toast } = useToast();
 
-    // Verifica se a URL de mídia é uma string base64 de imagem ou vídeo
     const isImage = report.mediaUrl && report.mediaUrl.startsWith('data:image');
     const isVideo = report.mediaUrl && report.mediaUrl.startsWith('data:video');
 
@@ -57,39 +58,42 @@ function ReportItem({ report }: { report: ErrorReport }) {
         if (!firestore) return;
         const reportRef = doc(firestore, `artifacts/${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}/public/data/error_reports`, report.id);
         const newStatus = report.status === 'open' ? 'concluded' : 'open';
-        try {
-            await updateDoc(reportRef, { status: newStatus });
-            toast({
-                title: 'Status Atualizado!',
-                description: `O relatório foi marcado como ${newStatus === 'concluded' ? 'concluído' : 'aberto'}.`,
+        
+        updateDoc(reportRef, { status: newStatus })
+            .then(() => {
+                toast({
+                    title: 'Status Atualizado!',
+                    description: `O relatório foi marcado como ${newStatus === 'concluded' ? 'concluído' : 'aberto'}.`,
+                });
+            })
+            .catch((error) => {
+                const permissionError = new FirestorePermissionError({
+                    path: reportRef.path,
+                    operation: 'update',
+                    requestResourceData: { status: newStatus },
+                });
+                errorEmitter.emit('permission-error', permissionError);
             });
-        } catch (error) {
-            console.error("Erro ao atualizar status:", error);
-            toast({
-                variant: 'destructive',
-                title: 'Erro',
-                description: 'Não foi possível atualizar o status do relatório.',
-            });
-        }
     };
     
     const handleDelete = async () => {
         if (!firestore) return;
         const reportRef = doc(firestore, `artifacts/${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}/public/data/error_reports`, report.id);
-        try {
-            await deleteDoc(reportRef);
-            toast({
-                title: 'Relatório Excluído',
-                description: 'O relatório foi removido com sucesso.',
+        
+        deleteDoc(reportRef)
+            .then(() => {
+                toast({
+                    title: 'Relatório Excluído',
+                    description: 'O relatório foi removido com sucesso.',
+                });
+            })
+            .catch((error) => {
+                const permissionError = new FirestorePermissionError({
+                    path: reportRef.path,
+                    operation: 'delete',
+                });
+                errorEmitter.emit('permission-error', permissionError);
             });
-        } catch (error) {
-            console.error("Erro ao excluir relatório:", error);
-            toast({
-                variant: 'destructive',
-                title: 'Erro',
-                description: 'Não foi possível excluir o relatório.',
-            });
-        }
     };
 
     const handleDownload = () => {
@@ -98,7 +102,7 @@ Relatório de Erro
 =================
 Cliente: ${report.clientName}
 Técnico: ${report.technicianName}
-Data do Erro: ${format(new Date(report.errorDate), 'dd/MM/yyyy')}
+Data do Erro: ${report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'}
 Data de Geração: ${report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}
 Status: ${report.status === 'open' ? 'Aberto' : 'Concluído'}
 -----------------
@@ -122,7 +126,6 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
         URL.revokeObjectURL(url);
     };
 
-    // Extrai o nome do arquivo para o download, se aplicável
     const getFileName = (fileType: 'media' | 'zip') => {
         const date = report.generatedAt ? format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm') : 'data_desconhecida';
         
@@ -148,7 +151,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                 <CardDescription>Técnico: {report.technicianName}</CardDescription>
                             </div>
                             <div className="text-xs text-muted-foreground text-right shrink-0 ml-2 flex flex-col items-end">
-                                <span>{format(new Date(report.errorDate), 'dd/MM/yyyy')}</span>
+                                <span>{report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'Data inválida'}</span>
                                 <span className="flex items-center gap-1 mt-1">
                                 {report.status === 'concluded' ? (
                                     <CheckCircle className="h-4 w-4 text-green-500" />
@@ -175,7 +178,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                 <Separator />
                 <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div><strong className='block text-muted-foreground'>Data do Erro</strong> {format(new Date(report.errorDate), 'dd/MM/yyyy')}</div>
+                        <div><strong className='block text-muted-foreground'>Data do Erro</strong> {report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'}</div>
                         <div><strong className='block text-muted-foreground'>Data de Geração</strong> {report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm') : 'N/A'}</div>
                     </div>
                     <div>

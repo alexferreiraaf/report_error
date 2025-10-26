@@ -24,6 +24,8 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Clock, File, Loader2, Send } from 'lucide-react';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
@@ -83,50 +85,68 @@ export function ErrorReportForm() {
       setIsSubmitting(false);
       return;
     }
-
-    try {
-      const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
-      if (!appId) {
-        throw new Error('ID da aplicação Firebase não configurado no ambiente.');
-      }
-      
-      const mediaUrl = data.mediaFile ? await uploadFile(data.mediaFile, 'midia') : null;
-      const zipUrl = data.zipFile ? await uploadFile(data.zipFile, 'banco_de_dados') : null;
-
-      const reportsCollectionRef = collection(firestore, `artifacts/${appId}/public/data/error_reports`);
-
-      const reportData = {
-        clientName: data.clientName,
-        technicianName: data.technicianName,
-        errorDate: data.errorDate,
-        reportText: data.reportText,
-        mediaUrl: mediaUrl,
-        zipUrl: zipUrl,
-        reportedByUserId: user.uid,
-        generatedAt: serverTimestamp(),
-        status: 'open',
-      };
-      
-      await addDoc(reportsCollectionRef, reportData);
-
-      toast({
-        title: 'Sucesso!',
-        description: '✅ Relatório de erro enviado com sucesso!',
-      });
-      form.reset();
-
-    } catch (error: any) {
-      console.error('Falha no envio do relatório:', error);
-      const errorMessage = `Ocorreu um erro inesperado: ${error.message || 'Por favor, tente novamente.'}`;
-      setFormError(errorMessage);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao Enviar Relatório',
-        description: 'Por favor, verifique a mensagem de erro acima do formulário.',
-      });
-    } finally {
-      setIsSubmitting(false);
+    
+    const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+    if (!appId) {
+        setFormError('ID da aplicação Firebase não configurado no ambiente.');
+        setIsSubmitting(false);
+        return;
     }
+    
+    let mediaUrl: string | null = null;
+    let zipUrl: string | null = null;
+    
+    try {
+        if (data.mediaFile) {
+            mediaUrl = await uploadFile(data.mediaFile, 'midia');
+        }
+        if (data.zipFile) {
+            zipUrl = await uploadFile(data.zipFile, 'banco_de_dados');
+        }
+    } catch (uploadError: any) {
+        console.error('Falha no upload do arquivo:', uploadError);
+        setFormError(`Falha no upload do arquivo: ${uploadError.message}`);
+        setIsSubmitting(false);
+        return;
+    }
+
+
+    const reportsCollectionRef = collection(firestore, `artifacts/${appId}/public/data/error_reports`);
+
+    const reportData = {
+      clientName: data.clientName,
+      technicianName: data.technicianName,
+      errorDate: data.errorDate,
+      reportText: data.reportText,
+      mediaUrl: mediaUrl,
+      zipUrl: zipUrl,
+      reportedByUserId: user.uid,
+      generatedAt: serverTimestamp(),
+      status: 'open',
+    };
+      
+    addDoc(reportsCollectionRef, reportData)
+        .then(() => {
+            toast({
+                title: 'Sucesso!',
+                description: '✅ Relatório de erro enviado com sucesso!',
+            });
+            form.reset();
+        })
+        .catch((error) => {
+            const permissionError = new FirestorePermissionError({
+                path: reportsCollectionRef.path,
+                operation: 'create',
+                requestResourceData: reportData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+
+            // Também exiba um erro genérico no formulário para o usuário
+            setFormError('Falha ao salvar o relatório no banco de dados. Verifique as permissões.');
+        })
+        .finally(() => {
+            setIsSubmitting(false);
+        });
   };
   
   if (isUserLoading) {
