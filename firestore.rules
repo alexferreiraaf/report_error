@@ -1,72 +1,64 @@
 /**
- * @fileOverview
- * This ruleset enforces a public read with owner-only writes model for error reports.
- * All data is stored under /artifacts/{appId}/public/data/error_reports/{errorReportId}.
+ * @fileoverview Firestore Security Rules for Error Reports.
  *
  * Core Philosophy:
- * Error reports are publicly readable to facilitate listing and filtering, but only the creator can modify them.
+ * This ruleset enforces that error reports are namespaced by `appId` for application-specific data isolation. 
+ * It uses a public data structure (`artifacts/{appId}/public/data/error_reports/{errorReportId}`) to allow listing without exposing private user data.
  *
  * Data Structure:
- * Error reports are stored under `/artifacts/{appId}/public/data/error_reports/{errorReportId}`, nested under an `appId` for data isolation.
+ * Error reports are stored under `/artifacts/{appId}/public/data/error_reports/{errorReportId}`.
+ * Each error report contains data related to a specific application and technician report.
  *
  * Key Security Decisions:
- * - Error reports are publicly readable to facilitate listing and filtering.
- * - Only the user who created the error report can update or delete it.
- * - The rules enforce that the `reportedByUserId` field matches the authenticated user's ID on creation,
- *   and that this field cannot be changed after creation to maintain relational integrity.
- * - The rules do NOT validate the structure of the error report data beyond the `reportedByUserId` field.
+ * - Public read access is granted to all error reports to support listing and filtering.
+ * - Only authenticated users can create, update, or delete error reports, and they must be the user who created the report (owner).
+ * - Data consistency between the path and document properties is enforced to prevent unauthorized access or manipulation.
  *
  * Denormalization for Authorization:
- * - The `ErrorReport` entity includes the `reportedByUserId` field. This denormalization is CRUCIAL
- *   for enforcing owner-only writes without needing additional reads.
- *
- * Structural Segregation:
- * - Error reports are stored under a path including the `appId` to isolate data for each application.
+ * - The `ErrorReport` entity requires a `reportedByUserId` field. This field MUST contain the user ID of the user that created the report.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to error reports while restricting write access to the owner.
+     * @description Grants public read access to error reports and restricts write access to the owner.
      * @path /artifacts/{appId}/public/data/error_reports/{errorReportId}
-     * @allow (get, list) Read access is public.
-     * @allow (create) User with ID 'user_abc' can create a new error report with `reportedByUserId: 'user_abc'`.
-     * @allow (update, delete) User with ID 'user_abc' can update/delete an existing error report where `resource.data.reportedByUserId == 'user_abc'`.
-     * @deny (create) User with ID 'user_def' cannot create an error report with `reportedByUserId: 'user_abc'`.
-     * @deny (update, delete) User with ID 'user_def' cannot update/delete an existing error report where `resource.data.reportedByUserId == 'user_abc'`.
-     * @principle Public read, owner-only writes. Enforces document ownership and prevents unauthorized modifications.
+     * @allow (get, list): Public read access is allowed.
+     * @allow (create): Authenticated user with matching `reportedByUserId`.
+     * @allow (update, delete): Authenticated owner of the error report.
+     * @deny (create): Unauthenticated user.
+     * @deny (create): Authenticated user with mismatched `reportedByUserId`.
+     * @deny (update, delete): Non-owner attempting to modify or delete the error report.
+     * @principle Enforces public read access with owner-only writes, validates relational integrity.
      */
     match /artifacts/{appId}/public/data/error_reports/{errorReportId} {
-      // Allow anyone to read error reports.
+      // Allow anyone to read error reports
       allow get, list: if true;
 
-      // Only allow the user who created the error report to create a new report,
-      // and ensure the reportedByUserId matches the authenticated user's ID.
+      // Only allow authenticated users to create error reports, and enforce that reportedByUserId matches the authenticated user's ID
       allow create: if isSignedIn() && request.resource.data.reportedByUserId == request.auth.uid;
 
-      // Only allow the user who created the error report to update or delete it.
-      // Also, ensure that the document exists before allowing the update or delete.
-      allow update: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
-      allow delete: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
+      // Only the owner (creator) of the error report can update or delete it, and only if the document exists
+      allow update, delete: if isExistingOwner(resource.data.reportedByUserId);
 
-      // Deny all other operations
-      allow create: if false;
-
-      // Define helper function to check if the user is the owner of the document AND the document exists.
-      function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
-      }
-
-      // Define helper function to check if the user is the owner of the document.
-      function isOwner(userId) {
-        return isSignedIn() && request.auth.uid == userId;
-      }
     }
 
-    // Define helper function to check if the user is signed in.
+    // ---- Helper functions ----
+
+    // Checks if the user is signed in (i.e., authenticated).
     function isSignedIn() {
       return request.auth != null;
+    }
+
+    // Checks if the user is the owner of the resource (i.e., resource.data.reportedByUserId == request.auth.uid)
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Checks if the user is the owner of the existing resource
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
     }
   }
 }

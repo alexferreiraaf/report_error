@@ -33,12 +33,11 @@ async function uploadFile(
 ): Promise<string | null> {
   if (!file || file.size === 0) return null;
   const storage = getStorage();
-  // We are not wrapping this in a try/catch because we want the error to be thrown
-  // to the calling function (onSubmit) so it can be handled there.
   const uniqueId = Date.now();
   const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
   const fileRef = ref(storage, filePath);
 
+  // We want the error to propagate up to the calling function (onSubmit)
   const snapshot = await uploadBytes(fileRef, file);
   const downloadUrl = await getDownloadURL(snapshot.ref);
 
@@ -83,7 +82,8 @@ export function ErrorReportForm() {
     setFormError(null);
 
     if (!firestore || !user) {
-      setFormError("O serviço de banco de dados ou autenticação não está disponível.");
+      const errorMsg = "Autenticação ou serviço de banco de dados não disponível. Aguarde e tente novamente.";
+      setFormError(errorMsg);
       setIsSubmitting(false);
       return;
     }
@@ -94,7 +94,7 @@ export function ErrorReportForm() {
       
       const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
       if (!appId) {
-        throw new Error('Firebase App ID is not configured.');
+        throw new Error('ID da aplicação Firebase não configurado.');
       }
       
       const reportsCollectionRef = collection(firestore, `artifacts/${appId}/public/data/error_reports`);
@@ -106,7 +106,7 @@ export function ErrorReportForm() {
         reportText: data.reportText,
         mediaUrl: mediaUrl,
         zipUrl: zipUrl,
-        reportedByUserId: user.uid,
+        reportedByUserId: user.uid, // Ensure this is set
         generatedAt: serverTimestamp(),
       };
       
@@ -117,29 +117,39 @@ export function ErrorReportForm() {
         description: '✅ Relatório de erro enviado com sucesso!',
       });
       form.reset();
-      // Also reset the underlying form element to clear file inputs
       if(formRef.current) {
         formRef.current.reset();
       }
-      // Manually clear file state in react-hook-form
       form.setValue('mediaFile', undefined);
       form.setValue('zipFile', undefined);
 
-    } catch (e: unknown) {
-      const error = e as Error;
-      console.error('Erro ao enviar relatório:', error);
+    } catch (error: any) {
+      console.error('Falha no envio do relatório:', error);
       
-      let errorMessage = `Falha ao enviar o relatório. Tente novamente. (${error.message})`;
-      if (error.message.includes('storage/unauthorized')) {
-        errorMessage = 'Permissão negada para enviar o arquivo. Verifique as regras de segurança do Firebase Storage.';
-      } else if (error.message.includes('permission-denied') || error.message.includes('insufficient permissions')) {
-        errorMessage = 'Permissão negada para salvar o relatório no banco de dados. Verifique as regras de segurança do Firestore.';
-      }
+      let errorMessage = "Ocorreu um erro desconhecido. Verifique o console para mais detalhes.";
 
+      if (error.code) { // Firebase errors have a 'code' property
+          switch (error.code) {
+              case 'storage/unauthorized':
+                  errorMessage = 'Permissão negada para enviar arquivos. Verifique as regras de segurança do Firebase Storage.';
+                  break;
+              case 'permission-denied':
+                  errorMessage = 'Permissão negada para salvar os dados. Verifique as regras de segurança do Firestore.';
+                  break;
+              case 'storage/retry-limit-exceeded':
+                  errorMessage = 'Não foi possível conectar ao serviço de armazenamento de arquivos. Verifique sua conexão com a internet.';
+                  break;
+              default:
+                  errorMessage = `Erro do Firebase: ${error.message} (código: ${error.code})`;
+          }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setFormError(errorMessage);
       toast({
         variant: 'destructive',
-        title: 'Erro no Envio',
+        title: 'Erro ao Gerar Relatório',
         description: errorMessage,
       });
     } finally {
@@ -161,7 +171,7 @@ export function ErrorReportForm() {
       {formError && (
          <Alert variant="destructive" className="mb-4">
             <AlertTriangle className="h-4 w-4" />
-            <AlertTitle>Erro</AlertTitle>
+            <AlertTitle>Falha no Envio</AlertTitle>
             <AlertDescription>{formError}</AlertDescription>
          </Alert>
       )}
