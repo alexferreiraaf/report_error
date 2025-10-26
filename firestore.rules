@@ -1,64 +1,84 @@
 /**
- * @fileoverview Firestore Security Rules for Error Reports.
+ * @fileoverview Firestore Security Rules for Prototyping.
  *
  * Core Philosophy:
- * This ruleset enforces that error reports are namespaced by `appId` for application-specific data isolation. 
- * It uses a public data structure (`artifacts/{appId}/public/data/error_reports/{errorReportId}`) to allow listing without exposing private user data.
+ * This ruleset prioritizes strict authorization based on document ownership
+ * while relaxing data validation to accelerate prototyping. It focuses on
+ * securing access to error reports submitted by technicians, ensuring that
+ * users can only modify reports they own or have explicit permission to access
+ * (in future iterations).
  *
  * Data Structure:
- * Error reports are stored under `/artifacts/{appId}/public/data/error_reports/{errorReportId}`.
- * Each error report contains data related to a specific application and technician report.
+ * Error reports are stored in the `artifacts/{appId}/public/data/error_reports/{errorReportId}`
+ * collection. The `appId` parameter isolates data for each application. Each
+ * error report includes a `reportedByUserId` field indicating the owner.
  *
  * Key Security Decisions:
- * - Public read access is granted to all error reports to support listing and filtering.
- * - Only authenticated users can create, update, or delete error reports, and they must be the user who created the report (owner).
- * - Data consistency between the path and document properties is enforced to prevent unauthorized access or manipulation.
+ * - Only the document owner can update or delete an error report.
+ * - Read access is public.
+ * - Data validation is minimized to essential authorization checks (e.g.,
+ *   ownership).
+ * - Listing is enabled for all.
  *
  * Denormalization for Authorization:
- * - The `ErrorReport` entity requires a `reportedByUserId` field. This field MUST contain the user ID of the user that created the report.
+ * The `reportedByUserId` field is crucial for ownership checks, avoiding the
+ * need for complex queries to determine who owns a given error report. This
+ * denormalization simplifies the security rules and improves performance.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants public read access to error reports and restricts write access to the owner.
-     * @path /artifacts/{appId}/public/data/error_reports/{errorReportId}
-     * @allow (get, list): Public read access is allowed.
-     * @allow (create): Authenticated user with matching `reportedByUserId`.
-     * @allow (update, delete): Authenticated owner of the error report.
-     * @deny (create): Unauthenticated user.
-     * @deny (create): Authenticated user with mismatched `reportedByUserId`.
-     * @deny (update, delete): Non-owner attempting to modify or delete the error report.
-     * @principle Enforces public read access with owner-only writes, validates relational integrity.
+     * @description Allows reading error reports and owner-only updates and deletes.
+     * @path artifacts/{appId}/public/data/error_reports/{errorReportId}
+     * @allow (get, list): Any user can read the error reports.
+     * @allow (create): Only the user that matches the reportByUserId field
+     * @allow (update, delete): The user must be the owner of the document.
+     * @deny (create): If the user does not match the reportByUserId field.
+     * @deny (update, delete): If the user does not match the owner.
+     * @principle Enforces document ownership for writes, allows public reads.
      */
     match /artifacts/{appId}/public/data/error_reports/{errorReportId} {
-      // Allow anyone to read error reports
+      // Allows anyone to read the error reports.
       allow get, list: if true;
 
-      // Only allow authenticated users to create error reports, and enforce that reportedByUserId matches the authenticated user's ID
+      // Allows creation of a new error report if the reportedByUserId matches the user's ID.
       allow create: if isSignedIn() && request.resource.data.reportedByUserId == request.auth.uid;
 
-      // Only the owner (creator) of the error report can update or delete it, and only if the document exists
-      allow update, delete: if isExistingOwner(resource.data.reportedByUserId);
+      // Allows updates if the user is the owner of the error report and the document exists.
+      allow update: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
 
+      // Allows deletion if the user is the owner of the error report and the document exists.
+      allow delete: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
     }
 
     // ---- Helper functions ----
 
-    // Checks if the user is signed in (i.e., authenticated).
+    /**
+     * @description Checks if the user is signed in.
+     * @return {bool} True if the user is signed in, false otherwise.
+     */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Checks if the user is the owner of the resource (i.e., resource.data.reportedByUserId == request.auth.uid)
+    /**
+     * @description Checks if the user is the owner of the document.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @return {bool} True if the user is the owner, false otherwise.
+     */
     function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+      return request.auth.uid == userId;
     }
 
-    // Checks if the user is the owner of the existing resource
+    /**
+     * @description Combines ownership check with existence check for update and delete.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @return {bool} True if the user is the owner and the document exists, false otherwise.
+     */
     function isExistingOwner(userId) {
-        return isOwner(userId) && resource != null;
+      return isOwner(userId) && resource != null;
     }
   }
 }
