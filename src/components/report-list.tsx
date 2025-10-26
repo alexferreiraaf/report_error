@@ -1,3 +1,4 @@
+
 'use client';
 import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
@@ -27,19 +28,8 @@ function ReportItem({ report }: { report: ErrorReport }) {
 
     // Extrai o nome do arquivo para o download, se aplicável
     const getFileName = (fileType: 'media' | 'zip') => {
-        if (!report.generatedAt) {
-            const fallbackDate = format(new Date(), 'yyyy-MM-dd_HH-mm');
-            if (fileType === 'media') {
-                if (isImage) return `media_${report.clientName}_${fallbackDate}.png`;
-                if (isVideo) return `media_${report.clientName}_${fallbackDate}.mp4`;
-            }
-            if (fileType === 'zip' && isZip) {
-                return `database_${report.clientName}_${fallbackDate}.zip`;
-            }
-            return 'download';
-        }
-
-        const date = format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
+        const date = report.generatedAt ? format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm') : format(new Date(), 'yyyy-MM-dd_HH-mm');
+        
         if (fileType === 'media') {
             if (isImage) return `media_${report.clientName}_${date}.png`;
             if (isVideo) return `media_${report.clientName}_${date}.mp4`;
@@ -134,16 +124,16 @@ export function ReportList() {
   
   if (!reports || reports.length === 0) {
     return (
-        <div className="text-center py-10 border-2 border-dashed rounded-lg">
+        <div className="text-center py-10 border-2 border-dashed rounded-lg mt-4">
             <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
             <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">Nenhum relatório encontrado</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Comece enviando um novo relatório de erro.</p>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Nenhum relatório foi enviado ainda.</p>
         </div>
     )
   }
 
   return (
-    <div className="space-y-4 columns-1 md:columns-2 lg:columns-1">
+    <div className="space-y-4 pt-4">
       {reports.map((report) => (
         <ReportItem key={report.id} report={report} />
       ))}
