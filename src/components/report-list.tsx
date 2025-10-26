@@ -16,7 +16,7 @@ interface ErrorReport {
   reportText: string;
   mediaUrl?: string | null;
   zipUrl?: string | null;
-  generatedAt: Timestamp;
+  generatedAt: Timestamp | null;
 }
 
 function ReportItem({ report }: { report: ErrorReport }) {
@@ -27,6 +27,18 @@ function ReportItem({ report }: { report: ErrorReport }) {
 
     // Extrai o nome do arquivo para o download, se aplicável
     const getFileName = (fileType: 'media' | 'zip') => {
+        if (!report.generatedAt) {
+            const fallbackDate = format(new Date(), 'yyyy-MM-dd_HH-mm');
+            if (fileType === 'media') {
+                if (isImage) return `media_${report.clientName}_${fallbackDate}.png`;
+                if (isVideo) return `media_${report.clientName}_${fallbackDate}.mp4`;
+            }
+            if (fileType === 'zip' && isZip) {
+                return `database_${report.clientName}_${fallbackDate}.zip`;
+            }
+            return 'download';
+        }
+
         const date = format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
         if (fileType === 'media') {
             if (isImage) return `media_${report.clientName}_${date}.png`;
@@ -49,7 +61,7 @@ function ReportItem({ report }: { report: ErrorReport }) {
                     </div>
                     <div className="text-xs text-muted-foreground text-right shrink-0 ml-2">
                         <p>{format(new Date(report.errorDate), 'dd/MM/yyyy')}</p>
-                        <p>{report.generatedAt ? format(report.generatedAt.toDate(), 'HH:mm') : ''}</p>
+                        <p>{report.generatedAt ? format(report.generatedAt.toDate(), 'HH:mm') : '...'}</p>
                     </div>
                 </div>
             </CardHeader>
