@@ -3,6 +3,12 @@
  * This ruleset enforces a public read with owner-only writes model for error reports.
  * All data is stored under /artifacts/{appId}/public/data/error_reports/{errorReportId}.
  *
+ * Core Philosophy:
+ * Error reports are publicly readable to facilitate listing and filtering, but only the creator can modify them.
+ *
+ * Data Structure:
+ * Error reports are stored under `/artifacts/{appId}/public/data/error_reports/{errorReportId}`, nested under an `appId` for data isolation.
+ *
  * Key Security Decisions:
  * - Error reports are publicly readable to facilitate listing and filtering.
  * - Only the user who created the error report can update or delete it.
@@ -43,6 +49,9 @@ service cloud.firestore {
       // Also, ensure that the document exists before allowing the update or delete.
       allow update: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
       allow delete: if isSignedIn() && isExistingOwner(resource.data.reportedByUserId);
+
+      // Deny all other operations
+      allow create: if false;
 
       // Define helper function to check if the user is the owner of the document AND the document exists.
       function isExistingOwner(userId) {
