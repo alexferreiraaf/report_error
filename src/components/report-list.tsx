@@ -1,13 +1,37 @@
 
 'use client';
 import { useFirebase, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, Timestamp } from 'firebase/firestore';
+import { collection, query, orderBy, Timestamp, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { AlertTriangle, Download, FileText, Image, Video, FileArchive } from 'lucide-react';
+import { AlertTriangle, Download, FileText, Image, Video, FileArchive, CheckCircle, Trash2, Check, DownloadCloud, Circle } from 'lucide-react';
 import { Button } from './ui/button';
 import { format } from 'date-fns';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+  } from "@/components/ui/alert-dialog"
+  
+import { Separator } from './ui/separator';
+import { useToast } from '@/hooks/use-toast';
 
 interface ErrorReport {
   id: string;
@@ -18,23 +42,95 @@ interface ErrorReport {
   mediaUrl?: string | null;
   zipUrl?: string | null;
   generatedAt: Timestamp | null;
+  status: 'open' | 'concluded';
 }
 
 function ReportItem({ report }: { report: ErrorReport }) {
+    const { firestore } = useFirebase();
+    const { toast } = useToast();
+
     // Verifica se a URL de mídia é uma string base64 de imagem ou vídeo
     const isImage = report.mediaUrl && report.mediaUrl.startsWith('data:image');
     const isVideo = report.mediaUrl && report.mediaUrl.startsWith('data:video');
-    const isZip = report.zipUrl && report.zipUrl.startsWith('data:application');
+
+    const handleStatusChange = async () => {
+        if (!firestore) return;
+        const reportRef = doc(firestore, `artifacts/${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}/public/data/error_reports`, report.id);
+        const newStatus = report.status === 'open' ? 'concluded' : 'open';
+        try {
+            await updateDoc(reportRef, { status: newStatus });
+            toast({
+                title: 'Status Atualizado!',
+                description: `O relatório foi marcado como ${newStatus === 'concluded' ? 'concluído' : 'aberto'}.`,
+            });
+        } catch (error) {
+            console.error("Erro ao atualizar status:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Erro',
+                description: 'Não foi possível atualizar o status do relatório.',
+            });
+        }
+    };
+    
+    const handleDelete = async () => {
+        if (!firestore) return;
+        const reportRef = doc(firestore, `artifacts/${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}/public/data/error_reports`, report.id);
+        try {
+            await deleteDoc(reportRef);
+            toast({
+                title: 'Relatório Excluído',
+                description: 'O relatório foi removido com sucesso.',
+            });
+        } catch (error) {
+            console.error("Erro ao excluir relatório:", error);
+            toast({
+                variant: 'destructive',
+                title: 'Erro',
+                description: 'Não foi possível excluir o relatório.',
+            });
+        }
+    };
+
+    const handleDownload = () => {
+        const reportContent = `
+Relatório de Erro
+=================
+Cliente: ${report.clientName}
+Técnico: ${report.technicianName}
+Data do Erro: ${format(new Date(report.errorDate), 'dd/MM/yyyy')}
+Data de Geração: ${report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}
+Status: ${report.status === 'open' ? 'Aberto' : 'Concluído'}
+-----------------
+
+Descrição do Problema:
+${report.reportText}
+
+-----------------
+Links de Anexos:
+Mídia: ${report.mediaUrl ? 'Anexo disponível' : 'Nenhum'}
+ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
+`;
+        const blob = new Blob([reportContent.trim()], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `relatorio_${report.clientName}_${report.id}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
 
     // Extrai o nome do arquivo para o download, se aplicável
     const getFileName = (fileType: 'media' | 'zip') => {
-        const date = report.generatedAt ? format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm') : format(new Date(), 'yyyy-MM-dd_HH-mm');
+        const date = report.generatedAt ? format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm') : 'data_desconhecida';
         
         if (fileType === 'media') {
             if (isImage) return `media_${report.clientName}_${date}.png`;
             if (isVideo) return `media_${report.clientName}_${date}.mp4`;
         }
-        if (fileType === 'zip' && isZip) {
+        if (fileType === 'zip') {
             return `database_${report.clientName}_${date}.zip`;
         }
         return 'download';
@@ -42,45 +138,118 @@ function ReportItem({ report }: { report: ErrorReport }) {
 
 
     return (
-        <Card className="break-inside-avoid">
-            <CardHeader>
-                <div className="flex justify-between items-start">
+        <Dialog>
+            <DialogTrigger asChild>
+                <Card className="break-inside-avoid cursor-pointer hover:border-primary transition-all group">
+                    <CardHeader>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <CardTitle className="text-lg font-bold group-hover:text-primary transition-colors">{report.clientName}</CardTitle>
+                                <CardDescription>Técnico: {report.technicianName}</CardDescription>
+                            </div>
+                            <div className="text-xs text-muted-foreground text-right shrink-0 ml-2 flex flex-col items-end">
+                                <span>{format(new Date(report.errorDate), 'dd/MM/yyyy')}</span>
+                                <span className="flex items-center gap-1 mt-1">
+                                {report.status === 'concluded' ? (
+                                    <CheckCircle className="h-4 w-4 text-green-500" />
+                                ) : (
+                                    <Circle className="h-4 w-4 text-amber-500" />
+                                )}
+                                {report.status === 'concluded' ? 'Concluído' : 'Aberto'}
+                                </span>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                         <p className="text-sm bg-muted/50 p-3 rounded-md border line-clamp-3">{report.reportText}</p>
+                    </CardContent>
+                </Card>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold text-primary">{report.clientName}</DialogTitle>
+                    <DialogDescription>
+                        Relatório detalhado do erro. Técnico: {report.technicianName}
+                    </DialogDescription>
+                </DialogHeader>
+                <Separator />
+                <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div><strong className='block text-muted-foreground'>Data do Erro</strong> {format(new Date(report.errorDate), 'dd/MM/yyyy')}</div>
+                        <div><strong className='block text-muted-foreground'>Data de Geração</strong> {report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm') : 'N/A'}</div>
+                    </div>
                     <div>
-                        <CardTitle className="text-lg font-bold">{report.clientName}</CardTitle>
-                        <CardDescription>Técnico: {report.technicianName}</CardDescription>
+                        <strong className='block text-muted-foreground mb-1'>Status do Relatório</strong>
+                        <div className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${report.status === 'concluded' ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'}`}>
+                        {report.status === 'concluded' ? <CheckCircle className="h-4 w-4" /> : <Circle className="h-4 w-4" />}
+                        {report.status === 'concluded' ? 'Concluído' : 'Aberto'}
+                        </div>
                     </div>
-                    <div className="text-xs text-muted-foreground text-right shrink-0 ml-2">
-                        <p>{format(new Date(report.errorDate), 'dd/MM/yyyy')}</p>
-                        <p>{report.generatedAt ? format(report.generatedAt.toDate(), 'HH:mm') : '...'}</p>
+                    
+                    <div>
+                        <strong className='block text-muted-foreground mb-1'>Relatório Detalhado</strong>
+                        <p className="text-sm bg-muted/50 p-4 rounded-md border whitespace-pre-wrap">{report.reportText}</p>
+                    </div>
+
+                    <div>
+                        <strong className='block text-muted-foreground mb-2'>Anexos</strong>
+                        <div className="flex gap-2 flex-wrap">
+                            {report.mediaUrl ? (
+                                <Button asChild variant="outline" size="sm">
+                                    <a href={report.mediaUrl} download={getFileName('media')}>
+                                        {isImage && <Image className="mr-2" />}
+                                        {isVideo && <Video className="mr-2" />}
+                                        {!isImage && !isVideo && <FileText className="mr-2" />}
+                                        Baixar Mídia
+                                        <Download className="ml-2 h-4 w-4" />
+                                    </a>
+                                </Button>
+                            ) : <p className='text-xs text-muted-foreground'>Nenhuma mídia anexada.</p>}
+
+                            {report.zipUrl ? (
+                                <Button asChild variant="outline" size="sm">
+                                    <a href={report.zipUrl} download={getFileName('zip')}>
+                                        <FileArchive className="mr-2" />
+                                        Baixar ZIP
+                                        <Download className="ml-2 h-4 w-4" />
+                                    </a>
+                                </Button>
+                            ) : <p className='text-xs text-muted-foreground'>Nenhum ZIP anexado.</p>}
+                        </div>
                     </div>
                 </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <p className="text-sm bg-muted/50 p-3 rounded-md border">{report.reportText}</p>
-                <div className="flex gap-2 flex-wrap">
-                    {report.mediaUrl && (
-                         <Button asChild variant="outline" size="sm">
-                             <a href={report.mediaUrl} download={getFileName('media')}>
-                                {isImage && <Image className="mr-2" />}
-                                {isVideo && <Video className="mr-2" />}
-                                {!isImage && !isVideo && <FileText className="mr-2" />}
-                                 Baixar Mídia
-                                 <Download className="ml-2 h-4 w-4" />
-                             </a>
-                         </Button>
-                    )}
-                    {report.zipUrl && (
-                        <Button asChild variant="outline" size="sm">
-                            <a href={report.zipUrl} download={getFileName('zip')}>
-                                <FileArchive className="mr-2" />
-                                Baixar ZIP
-                                <Download className="ml-2 h-4 w-4" />
-                            </a>
-                        </Button>
-                    )}
-                </div>
-            </CardContent>
-        </Card>
+                <Separator />
+                <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-between items-center gap-2 w-full">
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="destructive" size="sm"><Trash2 className="mr-2" /> Excluir</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Esta ação não pode ser desfeita. Isso excluirá permanentemente o relatório.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDelete}>Continuar</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
+                    <div className="flex gap-2">
+                        <Button variant="secondary" size="sm" onClick={handleDownload}><DownloadCloud className="mr-2" /> Baixar Relatório (.txt)</Button>
+                        <DialogClose asChild>
+                            <Button size="sm" onClick={handleStatusChange}>
+                                {report.status === 'open' ? <Check className="mr-2" /> : <Circle className="mr-2" />}
+                                Marcar como {report.status === 'open' ? 'Concluído' : 'Aberto'}
+                            </Button>
+                        </DialogClose>
+                    </div>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }
 

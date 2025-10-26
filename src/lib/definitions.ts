@@ -15,8 +15,7 @@ const ACCEPTED_ZIP_TYPES = ["application/zip", "application/x-zip-compressed"];
 
 const fileSchema = z
   .any()
-  .refine((file) => file?.size, { message: 'Arquivo é obrigatório' })
-  .refine((file) => file.size <= MAX_FILE_SIZE, `O tamanho máximo do arquivo é 100MB.`)
+  .refine((file) => !file || file?.size <= MAX_FILE_SIZE, `O tamanho máximo do arquivo é 100MB.`)
   .optional()
   .nullable();
 
@@ -34,4 +33,5 @@ export const reportSchema = z.object({
     'Apenas arquivos .zip são aceitos.'
   ),
   reportedByUserId: z.string(),
+  status: z.enum(['open', 'concluded']).default('open'),
 });

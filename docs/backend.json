@@ -49,6 +49,11 @@
         "appId": {
           "type": "string",
           "description": "The unique identifier of the application where the error was reported. "
+        },
+        "status": {
+            "type": "string",
+            "description": "The current status of the error report.",
+            "enum": ["open", "concluded"]
         }
       },
       "required": [
@@ -59,7 +64,8 @@
         "reportText",
         "reportedByUserId",
         "generatedAt",
-        "appId"
+        "appId",
+        "status"
       ]
     },
     "User": {
