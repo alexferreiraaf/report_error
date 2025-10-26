@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ref, uploadBytes, getDownloadURL, getStorage } from 'firebase/storage';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
 
 import { reportSchema } from '@/lib/definitions';
@@ -27,21 +26,20 @@ import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
-async function uploadFile(
-  file: File,
-  folder: string
-): Promise<string | null> {
-  if (!file || file.size === 0) return null;
-  const storage = getStorage();
-  const uniqueId = Date.now();
-  const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
-  const fileRef = ref(storage, filePath);
+// Nova função para converter um arquivo em string Base64
+const fileToBase64 = (file: File): Promise<string | null> => {
+  return new Promise((resolve, reject) => {
+    if (!file) {
+      resolve(null);
+      return;
+    }
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+};
 
-  const snapshot = await uploadBytes(fileRef, file);
-  const downloadUrl = await getDownloadURL(snapshot.ref);
-
-  return downloadUrl;
-}
 
 export function ErrorReportForm() {
   const { toast } = useToast();
@@ -92,8 +90,9 @@ export function ErrorReportForm() {
         throw new Error('ID da aplicação Firebase não configurado no ambiente.');
       }
       
-      const mediaUrl = data.mediaFile ? await uploadFile(data.mediaFile, 'midia') : null;
-      const zipUrl = data.zipFile ? await uploadFile(data.zipFile, 'banco_de_dados') : null;
+      // Converte os arquivos para Base64 antes de enviar
+      const mediaBase64 = data.mediaFile ? await fileToBase64(data.mediaFile) : null;
+      const zipBase64 = data.zipFile ? await fileToBase64(data.zipFile) : null;
       
       const reportsCollectionRef = collection(firestore, `artifacts/${appId}/public/data/error_reports`);
 
@@ -102,8 +101,8 @@ export function ErrorReportForm() {
         technicianName: data.technicianName,
         errorDate: data.errorDate,
         reportText: data.reportText,
-        mediaUrl: mediaUrl,
-        zipUrl: zipUrl,
+        mediaUrl: mediaBase64, // Salva a string Base64
+        zipUrl: zipBase64,       // Salva a string Base64
         reportedByUserId: user.uid,
         generatedAt: serverTimestamp(),
       };

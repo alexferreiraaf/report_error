@@ -20,8 +20,24 @@ interface ErrorReport {
 }
 
 function ReportItem({ report }: { report: ErrorReport }) {
-    const isImage = report.mediaUrl && (report.mediaUrl.includes('.png') || report.mediaUrl.includes('.jpg') || report.mediaUrl.includes('.jpeg') || report.mediaUrl.includes('.gif') || report.mediaUrl.includes('.webp'));
-    const isVideo = report.mediaUrl && (report.mediaUrl.includes('.mp4') || report.mediaUrl.includes('.mov') || report.mediaUrl.includes('.webm'));
+    // Verifica se a URL de mídia é uma string base64 de imagem ou vídeo
+    const isImage = report.mediaUrl && report.mediaUrl.startsWith('data:image');
+    const isVideo = report.mediaUrl && report.mediaUrl.startsWith('data:video');
+    const isZip = report.zipUrl && report.zipUrl.startsWith('data:application');
+
+    // Extrai o nome do arquivo para o download, se aplicável
+    const getFileName = (fileType: 'media' | 'zip') => {
+        const date = format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
+        if (fileType === 'media') {
+            if (isImage) return `media_${report.clientName}_${date}.png`;
+            if (isVideo) return `media_${report.clientName}_${date}.mp4`;
+        }
+        if (fileType === 'zip' && isZip) {
+            return `database_${report.clientName}_${date}.zip`;
+        }
+        return 'download';
+    }
+
 
     return (
         <Card className="break-inside-avoid">
@@ -42,7 +58,7 @@ function ReportItem({ report }: { report: ErrorReport }) {
                 <div className="flex gap-2 flex-wrap">
                     {report.mediaUrl && (
                          <Button asChild variant="outline" size="sm">
-                             <a href={report.mediaUrl} target="_blank" rel="noopener noreferrer">
+                             <a href={report.mediaUrl} download={getFileName('media')}>
                                 {isImage && <Image className="mr-2" />}
                                 {isVideo && <Video className="mr-2" />}
                                 {!isImage && !isVideo && <FileText className="mr-2" />}
@@ -53,7 +69,7 @@ function ReportItem({ report }: { report: ErrorReport }) {
                     )}
                     {report.zipUrl && (
                         <Button asChild variant="outline" size="sm">
-                            <a href={report.zipUrl} target="_blank" rel="noopener noreferrer">
+                            <a href={report.zipUrl} download={getFileName('zip')}>
                                 <FileArchive className="mr-2" />
                                 Baixar ZIP
                                 <Download className="ml-2 h-4 w-4" />
