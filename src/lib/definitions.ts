@@ -34,8 +34,4 @@ export const reportSchema = z.object({
     'Apenas arquivos .zip são aceitos.'
   ),
   reportedByUserId: z.string(),
-}).refine(
-  (data) => data.mediaFile || data.zipFile, {
-    message: 'É necessário anexar pelo menos um arquivo (Foto/Vídeo ou Arquivo Zipado).',
-    path: ['mediaFile'], // show error under media file input
 });
