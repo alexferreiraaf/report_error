@@ -5,7 +5,7 @@ import { collection, query, orderBy, Timestamp, doc, updateDoc, deleteDoc } from
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { AlertTriangle, Download, FileText, Image, Video, FileArchive, CheckCircle, Trash2, Check, DownloadCloud, Circle } from 'lucide-react';
+import { AlertTriangle, Download, FileText, Image, Video, FileArchive, CheckCircle, Trash2, Check, DownloadCloud, Circle, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
 import { format } from 'date-fns';
 import {
@@ -51,8 +51,8 @@ function ReportItem({ report }: { report: ErrorReport }) {
     const { firestore } = useFirebase();
     const { toast } = useToast();
 
-    const isImage = report.mediaUrl && report.mediaUrl.startsWith('data:image');
-    const isVideo = report.mediaUrl && report.mediaUrl.startsWith('data:video');
+    const isImage = report.mediaUrl && (report.mediaUrl.includes('image/jpeg') || report.mediaUrl.includes('image/png') || report.mediaUrl.includes('image/webp') || report.mediaUrl.includes('image/gif'));
+    const isVideo = report.mediaUrl && (report.mediaUrl.includes('video/mp4') || report.mediaUrl.includes('video/quicktime') || report.mediaUrl.includes('video/webm'));
 
     const handleStatusChange = async () => {
         if (!firestore) return;
@@ -102,7 +102,7 @@ Relatório de Erro
 =================
 Cliente: ${report.clientName}
 Técnico: ${report.technicianName}
-Data do Erro: ${report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'}
+Data do Erro: ${report.errorDate}
 Data de Geração: ${report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}
 Status: ${report.status === 'open' ? 'Aberto' : 'Concluído'}
 -----------------
@@ -244,9 +244,18 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                     <div className="flex gap-2">
                         <Button variant="secondary" size="sm" onClick={handleDownload}><DownloadCloud className="mr-2" /> Baixar Relatório (.txt)</Button>
                         <DialogClose asChild>
-                            <Button size="sm" onClick={handleStatusChange}>
-                                {report.status === 'open' ? <Check className="mr-2" /> : <Circle className="mr-2" />}
-                                Marcar como {report.status === 'open' ? 'Concluído' : 'Aberto'}
+                             <Button size="sm" onClick={handleStatusChange}>
+                                {report.status === 'open' ? (
+                                    <>
+                                        <Check className="mr-2 h-4 w-4" />
+                                        Marcar como Concluído
+                                    </>
+                                ) : (
+                                    <>
+                                        <RefreshCw className="mr-2 h-4 w-4" />
+                                        Reabrir Relatório
+                                    </>
+                                )}
                             </Button>
                         </DialogClose>
                     </div>
@@ -312,3 +321,5 @@ export function ReportList() {
     </div>
   );
 }
+
+    
