@@ -37,7 +37,7 @@ async function uploadFile(
   const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
   const fileRef = ref(storage, filePath);
 
-  // We want the error to propagate up to the calling function (onSubmit)
+  // Re-throw any error to be caught by the main try/catch block
   const snapshot = await uploadBytes(fileRef, file);
   const downloadUrl = await getDownloadURL(snapshot.ref);
 
@@ -89,13 +89,13 @@ export function ErrorReportForm() {
     }
 
     try {
-      const mediaUrl = data.mediaFile ? await uploadFile(data.mediaFile, 'midia') : null;
-      const zipUrl = data.zipFile ? await uploadFile(data.zipFile, 'banco_de_dados') : null;
-      
       const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
       if (!appId) {
-        throw new Error('ID da aplicação Firebase não configurado.');
+        throw new Error('ID da aplicação Firebase não configurado no ambiente.');
       }
+      
+      const mediaUrl = data.mediaFile ? await uploadFile(data.mediaFile, 'midia') : null;
+      const zipUrl = data.zipFile ? await uploadFile(data.zipFile, 'banco_de_dados') : null;
       
       const reportsCollectionRef = collection(firestore, `artifacts/${appId}/public/data/error_reports`);
 
@@ -106,7 +106,7 @@ export function ErrorReportForm() {
         reportText: data.reportText,
         mediaUrl: mediaUrl,
         zipUrl: zipUrl,
-        reportedByUserId: user.uid, // Ensure this is set
+        reportedByUserId: user.uid,
         generatedAt: serverTimestamp(),
       };
       
@@ -117,6 +117,7 @@ export function ErrorReportForm() {
         description: '✅ Relatório de erro enviado com sucesso!',
       });
       form.reset();
+      // Manually clear file inputs if necessary, as form.reset() might not
       if(formRef.current) {
         formRef.current.reset();
       }
@@ -126,21 +127,20 @@ export function ErrorReportForm() {
     } catch (error: any) {
       console.error('Falha no envio do relatório:', error);
       
-      let errorMessage = "Ocorreu um erro desconhecido. Verifique o console para mais detalhes.";
+      // Generic but clear error message for the user
+      let errorMessage = 'Ocorreu um erro ao enviar o relatório. Tente novamente.';
 
+      // More specific error for developers in the console and potentially user message
       if (error.code) { // Firebase errors have a 'code' property
           switch (error.code) {
               case 'storage/unauthorized':
-                  errorMessage = 'Permissão negada para enviar arquivos. Verifique as regras de segurança do Firebase Storage.';
+                  errorMessage = 'Erro de permissão ao enviar arquivo. Verifique as regras de segurança do Firebase Storage.';
                   break;
               case 'permission-denied':
-                  errorMessage = 'Permissão negada para salvar os dados. Verifique as regras de segurança do Firestore.';
-                  break;
-              case 'storage/retry-limit-exceeded':
-                  errorMessage = 'Não foi possível conectar ao serviço de armazenamento de arquivos. Verifique sua conexão com a internet.';
+                  errorMessage = 'Erro de permissão ao salvar o relatório. Verifique as regras de segurança do Firestore.';
                   break;
               default:
-                  errorMessage = `Erro do Firebase: ${error.message} (código: ${error.code})`;
+                  errorMessage = `Ocorreu um erro: ${error.message}`;
           }
       } else if (error.message) {
         errorMessage = error.message;
@@ -149,8 +149,8 @@ export function ErrorReportForm() {
       setFormError(errorMessage);
       toast({
         variant: 'destructive',
-        title: 'Erro ao Gerar Relatório',
-        description: errorMessage,
+        title: 'Erro ao Enviar Relatório',
+        description: 'Por favor, verifique a mensagem de erro acima do formulário.',
       });
     } finally {
       setIsSubmitting(false);
@@ -303,5 +303,3 @@ export function ErrorReportForm() {
     </Form>
   );
 }
-
-    
