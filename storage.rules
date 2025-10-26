@@ -1,10 +1,28 @@
+/**
+ * @fileoverview Rules for Firebase Storage.
+ * @see https://firebase.google.com/docs/storage/security
+ *
+ * This ruleset allows any authenticated user to read and write files
+ * within the 'error_reports/' directory and its subdirectories. This is
+ * necessary for the application to upload media and zip files.
+ */
 rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Permite o upload de arquivos para a pasta error_reports e suas subpastas
-    // apenas para usuários autenticados.
-    match /error_reports/{folder}/{allPaths=**} {
+
+    /**
+     * @description Allows read and write access to any file within any subfolder of 'error_reports/'.
+     * @path /error_reports/{allPaths=**}
+     *
+     * @example
+     * // Allow user 'user_abc' to upload a file to 'error_reports/midia/photo.jpg'
+     * // This rule will match because {allPaths} captures 'midia/photo.jpg'.
+     *
+     * @principle Grants broad access to the designated folder for application functionality,
+     *            while requiring authentication to prevent anonymous uploads.
+     */
+    match /error_reports/{allPaths=**} {
       allow read, write: if request.auth != null;
     }
   }
