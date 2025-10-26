@@ -543,6 +543,11 @@ body {
   margin-bottom: .25rem;
 }
 
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 .-ml-4 {
   margin-left: -1rem;
 }
