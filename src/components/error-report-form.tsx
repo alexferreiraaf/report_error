@@ -118,27 +118,7 @@ export function ErrorReportForm() {
 
     } catch (error: any) {
       console.error('Falha no envio do relatório:', error);
-      
-      let errorMessage = 'Ocorreu um erro inesperado ao enviar o relatório. Por favor, tente novamente.';
-
-      if (error.code) { // Firebase specific errors
-          switch (error.code) {
-              case 'storage/unauthorized':
-                  errorMessage = 'Erro de permissão ao enviar arquivo. Verifique as regras de segurança do Firebase Storage.';
-                  break;
-              case 'storage/retry-limit-exceeded':
-                  errorMessage = 'O tempo para envio do arquivo foi excedido, verifique as regras do Firebase Storage e sua conexão.';
-                  break;
-              case 'permission-denied':
-                  errorMessage = 'Erro de permissão ao salvar o relatório no banco de dados. Verifique as regras de segurança do Firestore.';
-                  break;
-              default:
-                  errorMessage = `Ocorreu um erro no Firebase: ${error.message}`;
-          }
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      
+      const errorMessage = `Ocorreu um erro inesperado: ${error.message || 'Por favor, tente novamente.'}`;
       setFormError(errorMessage);
       toast({
         variant: 'destructive',
