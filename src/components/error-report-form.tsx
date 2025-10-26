@@ -37,8 +37,6 @@ async function uploadFile(
   const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
   const fileRef = ref(storage, filePath);
 
-  // Await the upload and URL retrieval. Any error here will be caught
-  // by the try/catch block in the onSubmit handler.
   const snapshot = await uploadBytes(fileRef, file);
   const downloadUrl = await getDownloadURL(snapshot.ref);
 
@@ -50,7 +48,6 @@ export function ErrorReportForm() {
   const { auth, firestore, user, isUserLoading } = useFirebase();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const formRef = useRef<HTMLFormElement>(null);
 
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
@@ -118,12 +115,6 @@ export function ErrorReportForm() {
         description: '✅ Relatório de erro enviado com sucesso!',
       });
       form.reset();
-      
-      if(formRef.current) {
-        formRef.current.reset();
-      }
-      form.setValue('mediaFile', undefined);
-      form.setValue('zipFile', undefined);
 
     } catch (error: any) {
       console.error('Falha no envio do relatório:', error);
@@ -177,7 +168,7 @@ export function ErrorReportForm() {
             <AlertDescription>{formError}</AlertDescription>
          </Alert>
       )}
-      <form ref={formRef} onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
             control={form.control}
             name="reportedByUserId"
