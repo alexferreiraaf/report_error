@@ -37,7 +37,8 @@ async function uploadFile(
   const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
   const fileRef = ref(storage, filePath);
 
-  // Re-throw any error to be caught by the main try/catch block
+  // Await the upload and URL retrieval. Any error here will be caught
+  // by the try/catch block in the onSubmit handler.
   const snapshot = await uploadBytes(fileRef, file);
   const downloadUrl = await getDownloadURL(snapshot.ref);
 
@@ -117,7 +118,7 @@ export function ErrorReportForm() {
         description: '✅ Relatório de erro enviado com sucesso!',
       });
       form.reset();
-      // Manually clear file inputs if necessary, as form.reset() might not
+      
       if(formRef.current) {
         formRef.current.reset();
       }
@@ -127,20 +128,21 @@ export function ErrorReportForm() {
     } catch (error: any) {
       console.error('Falha no envio do relatório:', error);
       
-      // Generic but clear error message for the user
-      let errorMessage = 'Ocorreu um erro ao enviar o relatório. Tente novamente.';
+      let errorMessage = 'Ocorreu um erro inesperado ao enviar o relatório. Por favor, tente novamente.';
 
-      // More specific error for developers in the console and potentially user message
-      if (error.code) { // Firebase errors have a 'code' property
+      if (error.code) { // Firebase specific errors
           switch (error.code) {
               case 'storage/unauthorized':
                   errorMessage = 'Erro de permissão ao enviar arquivo. Verifique as regras de segurança do Firebase Storage.';
                   break;
+              case 'storage/retry-limit-exceeded':
+                  errorMessage = 'O tempo para envio do arquivo foi excedido, verifique as regras do Firebase Storage e sua conexão.';
+                  break;
               case 'permission-denied':
-                  errorMessage = 'Erro de permissão ao salvar o relatório. Verifique as regras de segurança do Firestore.';
+                  errorMessage = 'Erro de permissão ao salvar o relatório no banco de dados. Verifique as regras de segurança do Firestore.';
                   break;
               default:
-                  errorMessage = `Ocorreu um erro: ${error.message}`;
+                  errorMessage = `Ocorreu um erro no Firebase: ${error.message}`;
           }
       } else if (error.message) {
         errorMessage = error.message;
