@@ -25,9 +25,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Clock, File, Loader2, Send } from 'lucide-react';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { errorEmitter } from '@/firebase/error-emitter';
-
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
@@ -37,28 +34,16 @@ async function uploadFile(
 ): Promise<string | null> {
   if (!file || file.size === 0) return null;
   const storage = getStorage();
-  try {
-    const uniqueId = Date.now();
-    const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
-    const fileRef = ref(storage, filePath);
-  
-    const snapshot = await uploadBytes(fileRef, file);
-    const downloadUrl = await getDownloadURL(snapshot.ref);
-  
-    return downloadUrl;
-  } catch (error) {
-    const permissionError = new FirestorePermissionError({
-      path: `error_reports/${folder}`,
-      operation: 'write', 
-      requestResourceData: {
-        name: file.name,
-        size: file.size,
-        contentType: file.type,
-      },
-    });
-    errorEmitter.emit('permission-error', permissionError);
-    throw error;
-  }
+  // We are not wrapping this in a try/catch because we want the error to be thrown
+  // to the calling function (onSubmit) so it can be handled there.
+  const uniqueId = Date.now();
+  const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
+  const fileRef = ref(storage, filePath);
+
+  const snapshot = await uploadBytes(fileRef, file);
+  const downloadUrl = await getDownloadURL(snapshot.ref);
+
+  return downloadUrl;
 }
 
 export function ErrorReportForm() {
@@ -122,7 +107,7 @@ export function ErrorReportForm() {
         reportText: data.reportText,
         mediaUrl: mediaUrl,
         zipUrl: zipUrl,
-        reportedByUserId: user.uid, // Use user.uid directly for security
+        reportedByUserId: user.uid,
         generatedAt: serverTimestamp(),
       };
       
@@ -144,10 +129,10 @@ export function ErrorReportForm() {
     } catch (e: unknown) {
       const error = e as Error;
       console.error('Erro ao enviar relatório:', error);
-      // The permission error is already emitted by uploadFile, here we just update the UI
-      const errorMessage = error.message.includes('permission-denied') 
-        ? 'Permissão negada. Verifique as regras de segurança do Firebase Storage.'
-        : `Falha ao enviar o arquivo. Erro: ${error.message}`;
+      
+      const errorMessage = (error.message && error.message.includes('storage/unauthorized'))
+        ? 'Permissão negada para enviar o arquivo. Verifique as regras de segurança do Firebase Storage.'
+        : `Falha ao enviar o arquivo. Tente novamente. (${error.message})`;
 
       setFormError(errorMessage);
       toast({
@@ -306,5 +291,3 @@ export function ErrorReportForm() {
     </Form>
   );
 }
-
-    
