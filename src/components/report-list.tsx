@@ -42,6 +42,8 @@ import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import jsPDF from 'jspdf';
+
 
 interface ErrorReport {
   id: string;
@@ -128,33 +130,95 @@ function ReportItem({ report }: { report: ErrorReport }) {
     };
 
     const handleDownload = () => {
-        const reportContent = `
-Relatório de Erro
-=================
-Cliente: ${report.clientName}
-Técnico: ${report.technicianName}
-Data do Erro: ${report.errorDate}
-Data de Geração: ${report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}
-Status: ${report.status === 'open' ? 'Aberto' : 'Concluído'}
-Banco de dados salvo no PC: ${report.databaseSavedOnPC}
------------------
+        const doc = new jsPDF();
+        const margin = 15;
+        let y = 20;
 
-Descrição do Problema:
-${report.reportText}
+        doc.setFontSize(18);
+        doc.text('Relatório de Erro', margin, y);
+        y += 10;
 
------------------
-Anexos:
-Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
-`;
-        const blob = new Blob([reportContent.trim()], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `relatorio_${report.clientName}_${report.id}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        doc.setLineWidth(0.5);
+        doc.line(margin, y, doc.internal.pageSize.width - margin, y);
+        y += 10;
+
+        doc.setFontSize(12);
+        doc.text(`Cliente: ${report.clientName}`, margin, y);
+        y += 7;
+        doc.text(`Técnico: ${report.technicianName}`, margin, y);
+        y += 7;
+        doc.text(`Data do Erro: ${report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'}`, margin, y);
+        y += 7;
+        doc.text(`Data de Geração: ${report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}`, margin, y);
+        y += 7;
+        doc.text(`Status: ${report.status === 'open' ? 'Aberto' : 'Concluído'}`, margin, y);
+        y += 7;
+        doc.text(`Banco de dados salvo no PC: ${report.databaseSavedOnPC}`, margin, y);
+        y += 10;
+
+        doc.setFont('helvetica', 'bold');
+        doc.text('Descrição do Problema:', margin, y);
+        y += 7;
+        doc.setFont('helvetica', 'normal');
+        const splitText = doc.splitTextToSize(report.reportText, doc.internal.pageSize.width - margin * 2);
+        doc.text(splitText, margin, y);
+        y += (splitText.length * 5) + 10;
+        
+        doc.setFont('helvetica', 'bold');
+        doc.text('Anexo:', margin, y);
+        y += 7;
+
+        if (isImage && report.mediaUrl) {
+            try {
+                const img = new (window as any).Image();
+                img.src = report.mediaUrl;
+                
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const pageHeight = doc.internal.pageSize.getHeight();
+                
+                const maxWidth = pageWidth - (margin * 2);
+                const maxHeight = pageHeight - y - margin;
+
+                let imgWidth = img.width;
+                let imgHeight = img.height;
+                let ratio = imgWidth / imgHeight;
+
+                if (imgWidth > maxWidth) {
+                    imgWidth = maxWidth;
+                    imgHeight = imgWidth / ratio;
+                }
+                
+                if (imgHeight > maxHeight) {
+                    imgHeight = maxHeight;
+                    imgWidth = imgHeight * ratio;
+                }
+                
+                if (y + imgHeight > pageHeight - margin) {
+                    doc.addPage();
+                    y = margin;
+                }
+
+                doc.addImage(report.mediaUrl, 'PNG', margin, y, imgWidth, imgHeight);
+            } catch (e) {
+                console.error("Erro ao adicionar imagem ao PDF:", e);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(255, 0, 0);
+                doc.text('Não foi possível carregar a imagem no PDF.', margin, y);
+            }
+        } else if (isVideo && report.mediaUrl) {
+            doc.setFont('helvetica', 'normal');
+            doc.textWithLink('Clique para ver o vídeo (link externo)', margin, y, { url: report.mediaUrl });
+             y += 7;
+             doc.setFontSize(8);
+             doc.setTextColor(150);
+             doc.text('O vídeo não pode ser embutido diretamente no PDF.', margin, y);
+        } else {
+            doc.setFont('helvetica', 'normal');
+            doc.text('Nenhum anexo de mídia fornecido.', margin, y);
+        }
+
+
+        doc.save(`relatorio_${report.clientName}_${report.id}.pdf`);
     };
 
     const getFileName = (fileType: 'media') => {
@@ -384,7 +448,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
 
                 <div className="flex flex-wrap gap-2">
                     <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}><Edit className="mr-2 h-4 w-4" /> Editar</Button>
-                    <Button variant="secondary" size="sm" onClick={handleDownload}><DownloadCloud className="mr-2 h-4 w-4" /> Baixar (.txt)</Button>
+                    <Button variant="secondary" size="sm" onClick={handleDownload}><DownloadCloud className="mr-2 h-4 w-4" /> Baixar (.pdf)</Button>
                     <DialogClose asChild>
                             <Button size="sm" onClick={handleStatusChange}>
                             {report.status === 'open' ? (
