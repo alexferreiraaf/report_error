@@ -133,7 +133,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$client$2d
 ;
 ;
 const metadata = {
-    title: 'Error Lookout',
+    title: 'Error System',
     description: 'Submit detailed error reports.',
     manifest: '/manifest.webmanifest'
 };

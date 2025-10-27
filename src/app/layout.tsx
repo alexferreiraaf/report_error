@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 
 export const metadata: Metadata = {
-  title: 'Error Lookout',
+  title: 'Error System',
   description: 'Submit detailed error reports.',
   manifest: '/manifest.webmanifest',
 };

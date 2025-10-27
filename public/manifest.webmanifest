@@ -1,16 +1,20 @@
 {
-  "name": "Report Error",
-  "short_name": "Report Error",
-  "description": "Submit detailed error reports for your system.",
-  "icons": [
-    {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
-    }
-  ],
+  "name": "Error System",
+  "short_name": "Error System",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#2463eb",
-  "theme_color": "#2463eb"
+  "background_color": "#ffffff",
+  "theme_color": "#2463eb",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
