@@ -32,10 +32,10 @@
           "description": "URL of the uploaded media file (image or video) associated with the error report.",
           "format": "uri"
         },
-        "zipUrl": {
+        "databaseSavedOnPC": {
           "type": "string",
-          "description": "URL of the uploaded zipped database file associated with the error report.",
-          "format": "uri"
+          "description": "Indicates if the database is saved on the local PC.",
+          "enum": ["sim", "não"]
         },
         "reportedByUserId": {
           "type": "string",
@@ -65,7 +65,8 @@
         "reportedByUserId",
         "generatedAt",
         "appId",
-        "status"
+        "status",
+        "databaseSavedOnPC"
       ]
     },
     "User": {
@@ -116,3 +117,4 @@
     "reasoning": "The Firestore structure is designed to store error reports submitted by technicians. To ensure authorization independence and secure data access, the structure incorporates denormalization and structural segregation. Error reports are stored under a path that includes the application ID, ensuring that each application's data is isolated. Given the constraints of anonymous auth and the requirements for filtering and listing reports, a public data structure is used for the error reports. The structure supports QAPs by segregating error reports based on `appId` and storing them in a location that simplifies listing without exposing private user data."
   }
 }
+    

@@ -20,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Clock, File, Loader2, Send } from 'lucide-react';
 import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
@@ -51,14 +52,13 @@ export function ErrorReportForm() {
       errorDate: '',
       reportText: '',
       mediaFile: undefined,
-      zipFile: undefined,
+      databaseSavedOnPC: "não",
       reportedByUserId: '',
       status: 'open',
     },
   });
 
   const mediaFile = form.watch('mediaFile');
-  const zipFile = form.watch('zipFile');
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -89,14 +89,10 @@ export function ErrorReportForm() {
     }
     
     let mediaUrl: string | null = null;
-    let zipUrl: string | null = null;
     
     try {
         if (data.mediaFile) {
             mediaUrl = await fileToBase64(data.mediaFile);
-        }
-        if (data.zipFile) {
-            zipUrl = await fileToBase64(data.zipFile);
         }
     } catch (uploadError: any) {
         console.error('Falha na conversão do arquivo para Base64:', uploadError);
@@ -114,7 +110,7 @@ export function ErrorReportForm() {
       errorDate: data.errorDate,
       reportText: data.reportText,
       mediaUrl: mediaUrl,
-      zipUrl: zipUrl,
+      databaseSavedOnPC: data.databaseSavedOnPC,
       reportedByUserId: user.uid,
       generatedAt: serverTimestamp(),
       status: 'open',
@@ -236,16 +232,34 @@ export function ErrorReportForm() {
         
         <FormField
           control={form.control}
-          name="zipFile"
-          render={({ field: { onChange, value, ...rest } }) => (
-            <FormItem className="pt-4 border-t border-border">
-              <FormLabel>Arquivo do Banco de Dados (.zip, .rar)</FormLabel>
+          name="databaseSavedOnPC"
+          render={({ field }) => (
+            <FormItem className="space-y-3 pt-4 border-t border-border">
+              <FormLabel>Banco de dados salvo no PC?</FormLabel>
               <FormControl>
-                <Input type="file" accept=".zip,.rar,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/vnd.rar" onChange={(e) => onChange(e.target.files ? e.target.files[0] : undefined)} {...rest} 
-                  className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
-                />
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex space-x-4"
+                >
+                  <FormItem className="flex items-center space-x-2 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="sim" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Sim
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-2 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="não" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Não
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
               </FormControl>
-              {zipFile && <span className="text-xs text-primary/80 truncate flex items-center"><File className="w-3 h-3 inline mr-1" /> {zipFile.name}</span>}
               <FormMessage />
             </FormItem>
           )}

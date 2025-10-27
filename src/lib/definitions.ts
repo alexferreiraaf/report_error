@@ -11,12 +11,6 @@ const ACCEPTED_MEDIA_TYPES = [
   "video/quicktime",
   "video/webm",
 ];
-const ACCEPTED_ARCHIVE_TYPES = [
-    "application/zip", 
-    "application/x-zip-compressed", 
-    "application/x-rar-compressed",
-    "application/vnd.rar"
-];
 
 const fileSchema = z
   .any()
@@ -35,10 +29,9 @@ export const reportSchema = z.object({
     (file) => !file || ACCEPTED_MEDIA_TYPES.includes(file.type),
     'Apenas formatos de imagem e vídeo são aceitos.'
   ),
-  zipFile: fileSchema.refine(
-    (file) => !file || ACCEPTED_ARCHIVE_TYPES.includes(file.type),
-    'Apenas arquivos .zip ou .rar são aceitos.'
-  ),
+  databaseSavedOnPC: z.enum(['sim', 'não'], {
+    required_error: "Você precisa selecionar uma opção.",
+  }),
   reportedByUserId: z.string(),
   status: z.enum(['open', 'concluded']).default('open'),
 });

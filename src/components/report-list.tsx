@@ -8,7 +8,7 @@ import { z } from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from './ui/alert';
-import { AlertTriangle, Download, FileText, Image, Video, FileArchive, CheckCircle, Trash2, Check, DownloadCloud, Circle, RefreshCw, Edit, Save, X, Loader2 } from 'lucide-react';
+import { AlertTriangle, Download, FileText, Image, Video, CheckCircle, Trash2, Check, DownloadCloud, Circle, RefreshCw, Edit, Save, X, Loader2, Database } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -41,6 +41,7 @@ import { Separator } from './ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 
 interface ErrorReport {
   id: string;
@@ -49,7 +50,7 @@ interface ErrorReport {
   errorDate: string;
   reportText: string;
   mediaUrl?: string | null;
-  zipUrl?: string | null;
+  databaseSavedOnPC: 'sim' | 'não';
   generatedAt: Timestamp | null;
   status: 'open' | 'concluded';
 }
@@ -72,7 +73,7 @@ function ReportItem({ report }: { report: ErrorReport }) {
             reportedByUserId: '',
             status: report.status,
             mediaFile: undefined,
-            zipFile: undefined,
+            databaseSavedOnPC: report.databaseSavedOnPC,
         },
     });
 
@@ -135,15 +136,15 @@ Técnico: ${report.technicianName}
 Data do Erro: ${report.errorDate}
 Data de Geração: ${report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}
 Status: ${report.status === 'open' ? 'Aberto' : 'Concluído'}
+Banco de dados salvo no PC: ${report.databaseSavedOnPC}
 -----------------
 
 Descrição do Problema:
 ${report.reportText}
 
 -----------------
-Links de Anexos:
-Mídia: ${report.mediaUrl ? 'Anexo disponível' : 'Nenhum'}
-ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
+Anexos:
+Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
 `;
         const blob = new Blob([reportContent.trim()], { type: 'text/plain' });
         const url = URL.createObjectURL(blob);
@@ -156,16 +157,13 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
         URL.revokeObjectURL(url);
     };
 
-    const getFileName = (fileType: 'media' | 'zip') => {
+    const getFileName = (fileType: 'media') => {
         if (!report.generatedAt) return 'download';
         const date = format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
         
         if (fileType === 'media') {
             if (isImage) return `media_${report.clientName}_${date}.png`;
             if (isVideo) return `media_${report.clientName}_${date}.mp4`;
-        }
-        if (fileType === 'zip') {
-            return `database_${report.clientName}_${date}.zip`;
         }
         return 'download';
     }
@@ -178,12 +176,12 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
 
         const reportRef = doc(firestore, `artifacts/${appId}/public/data/error_reports`, report.id);
 
-        // We only update the text fields. File uploads are not part of the edit functionality for simplicity.
         const updatedData = {
             clientName: data.clientName,
             technicianName: data.technicianName,
             errorDate: data.errorDate,
             reportText: data.reportText,
+            databaseSavedOnPC: data.databaseSavedOnPC,
         };
 
         updateDoc(reportRef, updatedData)
@@ -253,6 +251,40 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                     />
                     <FormField
                         control={form.control}
+                        name="databaseSavedOnPC"
+                        render={({ field }) => (
+                            <FormItem className="space-y-3">
+                            <FormLabel>Banco de dados salvo no PC?</FormLabel>
+                            <FormControl>
+                                <RadioGroup
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                className="flex space-x-4"
+                                >
+                                <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                    <RadioGroupItem value="sim" />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">
+                                    Sim
+                                    </FormLabel>
+                                </FormItem>
+                                <FormItem className="flex items-center space-x-2 space-y-0">
+                                    <FormControl>
+                                    <RadioGroupItem value="não" />
+                                    </FormControl>
+                                    <FormLabel className="font-normal">
+                                    Não
+                                    </FormLabel>
+                                </FormItem>
+                                </RadioGroup>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
                         name="reportText"
                         render={({ field }) => (
                             <FormItem>
@@ -302,30 +334,29 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                     <p className="text-sm bg-muted/50 p-4 rounded-md border whitespace-pre-wrap">{report.reportText}</p>
                 </div>
 
-                <div>
-                    <strong className='block text-muted-foreground mb-2'>Anexos</strong>
-                    <div className="flex gap-2 flex-wrap">
-                       {report.mediaUrl ? (
-                            <Button asChild variant="outline" size="sm">
-                                <a href={report.mediaUrl} download={getFileName('media')}>
-                                    {isImage && <Image className="mr-2 h-4 w-4" />}
-                                    {isVideo && <Video className="mr-2 h-4 w-4" />}
-                                    {!isImage && !isVideo && <FileText className="mr-2 h-4 w-4" />}
-                                    Baixar Mídia
-                                    <Download className="ml-2 h-4 w-4" />
-                                </a>
-                            </Button>
-                        ) : <p className='text-xs text-muted-foreground'>Nenhuma mídia anexada.</p>}
-
-                        {report.zipUrl ? (
-                            <Button asChild variant="outline" size="sm">
-                                <a href={report.zipUrl} download={getFileName('zip')}>
-                                    <FileArchive className="mr-2 h-4 w-4" />
-                                    Baixar ZIP
-                                    <Download className="ml-2 h-4 w-4" />
-                                </a>
-                            </Button>
-                        ) : <p className='text-xs text-muted-foreground'>Nenhum ZIP anexado.</p>}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <strong className='block text-muted-foreground mb-2'>Anexo de Mídia</strong>
+                        <div className="flex gap-2 flex-wrap">
+                        {report.mediaUrl ? (
+                                <Button asChild variant="outline" size="sm">
+                                    <a href={report.mediaUrl} download={getFileName('media')}>
+                                        {isImage && <Image className="mr-2 h-4 w-4" />}
+                                        {isVideo && <Video className="mr-2 h-4 w-4" />}
+                                        {!isImage && !isVideo && <FileText className="mr-2 h-4 w-4" />}
+                                        Baixar Mídia
+                                        <Download className="ml-2 h-4 w-4" />
+                                    </a>
+                                </Button>
+                            ) : <p className='text-xs text-muted-foreground'>Nenhuma mídia anexada.</p>}
+                        </div>
+                    </div>
+                    <div>
+                        <strong className='block text-muted-foreground mb-2'>Banco de dados salvo no PC?</strong>
+                        <div className='flex items-center gap-2 text-sm'>
+                            <Database className="h-4 w-4 text-muted-foreground" />
+                            <span className="font-medium capitalize">{report.databaseSavedOnPC}</span>
+                        </div>
                     </div>
                 </div>
             </div>
