@@ -1819,11 +1819,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$i
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/textarea.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/form.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$definitions$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/definitions.ts [app-client] (ecmascript)");
-(()=>{
-    const e = new Error("Cannot find module 'date-fns'");
-    e.code = 'MODULE_NOT_FOUND';
-    throw e;
-})();
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/node_modules/date-fns/format.mjs [app-client] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/dialog.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/alert-dialog.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/components/ui/separator.tsx [app-client] (ecmascript)");
@@ -1940,9 +1936,9 @@ function ReportItem({ report }) {
         y += 7;
         doc.text(`Técnico: ${report.technicianName}`, margin, y);
         y += 7;
-        doc.text(`Data do Erro: ${report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'}`, margin, y);
+        doc.text(`Data do Erro: ${report.errorDate ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'}`, margin, y);
         y += 7;
-        doc.text(`Data de Geração: ${report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}`, margin, y);
+        doc.text(`Data de Geração: ${report.generatedAt ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm:ss') : 'N/A'}`, margin, y);
         y += 7;
         doc.text(`Status: ${report.status === 'open' ? 'Aberto' : 'Concluído'}`, margin, y);
         y += 7;
@@ -2005,7 +2001,7 @@ function ReportItem({ report }) {
     };
     const getFileName = (fileType)=>{
         if (!report.generatedAt) return 'download';
-        const date = format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
+        const date = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
         if (fileType === 'media') {
             if (isImage) return `media_${report.clientName}_${date}.png`;
             if (isVideo) return `media_${report.clientName}_${date}.mp4`;
@@ -2483,7 +2479,7 @@ function ReportItem({ report }) {
                                             columnNumber: 26
                                         }, this),
                                         " ",
-                                        report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'
+                                        report.errorDate ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(report.errorDate), 'dd/MM/yyyy') : 'N/A'
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
@@ -2501,7 +2497,7 @@ function ReportItem({ report }) {
                                             columnNumber: 26
                                         }, this),
                                         " ",
-                                        report.generatedAt ? format(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm') : 'N/A'
+                                        report.generatedAt ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(report.generatedAt.toDate(), 'dd/MM/yyyy HH:mm') : 'N/A'
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
@@ -2959,7 +2955,7 @@ function ReportItem({ report }) {
                                         className: "text-xs text-muted-foreground text-right shrink-0 ml-2 flex flex-col items-end",
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                children: report.errorDate ? format(new Date(report.errorDate), 'dd/MM/yyyy') : 'Data inválida'
+                                                children: report.errorDate ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(report.errorDate), 'dd/MM/yyyy') : 'Data inválida'
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
                                                 lineNumber: 484,
