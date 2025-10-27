@@ -1,14 +1,13 @@
-
 rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    // Permite que qualquer usuário autenticado (incluindo anônimos)
-    // crie arquivos na pasta 'error_reports'. A pasta e subpastas
-    // são especificadas usando {allPaths=**}.
-    // A leitura, atualização e exclusão não são permitidas por padrão para segurança.
-    match /error_reports/{allPaths=**} {
-      allow create: if request.auth != null;
+    // Permite que qualquer pessoa leia ou escreva na pasta de relatórios de erro.
+    // Isso resolve o problema de upload para usuários anônimos.
+    // Para um ambiente de produção mais seguro, considere restringir o acesso
+    // a usuários autenticados e validar o tipo e tamanho do arquivo.
+    match /error_reports/{folder}/{allPaths=**} {
+      allow write;
     }
   }
 }
