@@ -76,12 +76,15 @@ function ReportItem({ report }: { report: ErrorReport }) {
         },
     });
 
-    const isImage = report.mediaUrl && !report.mediaUrl.startsWith('data:video');
+    const isImage = report.mediaUrl && report.mediaUrl.startsWith('data:image');
     const isVideo = report.mediaUrl && report.mediaUrl.startsWith('data:video');
 
     const handleStatusChange = async () => {
         if (!firestore) return;
-        const reportRef = doc(firestore, `artifacts/${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}/public/data/error_reports`, report.id);
+        const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+        if (!appId) return;
+
+        const reportRef = doc(firestore, `artifacts/${appId}/public/data/error_reports`, report.id);
         const newStatus = report.status === 'open' ? 'concluded' : 'open';
         
         updateDoc(reportRef, { status: newStatus })
@@ -103,7 +106,9 @@ function ReportItem({ report }: { report: ErrorReport }) {
     
     const handleDelete = async () => {
         if (!firestore) return;
-        const reportRef = doc(firestore, `artifacts/${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}/public/data/error_reports`, report.id);
+        const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+        if (!appId) return;
+        const reportRef = doc(firestore, `artifacts/${appId}/public/data/error_reports`, report.id);
         
         deleteDoc(reportRef)
             .then(() => {
@@ -152,7 +157,8 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
     };
 
     const getFileName = (fileType: 'media' | 'zip') => {
-        const date = report.generatedAt ? format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm') : 'data_desconhecida';
+        if (!report.generatedAt) return 'download';
+        const date = format(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
         
         if (fileType === 'media') {
             if (isImage) return `media_${report.clientName}_${date}.png`;
@@ -167,7 +173,10 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
     const onUpdate: SubmitHandler<ReportFormValues> = async (data) => {
         if (!firestore) return;
         setIsUpdating(true);
-        const reportRef = doc(firestore, `artifacts/${process.env.NEXT_PUBLIC_FIREBASE_APP_ID}/public/data/error_reports`, report.id);
+        const appId = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+        if (!appId) return;
+
+        const reportRef = doc(firestore, `artifacts/${appId}/public/data/error_reports`, report.id);
 
         // We only update the text fields. File uploads are not part of the edit functionality for simplicity.
         const updatedData = {

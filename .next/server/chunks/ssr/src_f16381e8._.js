@@ -10,7 +10,7 @@ __turbopack_context__.s({
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/zod/lib/index.mjs [app-ssr] (ecmascript)");
 ;
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+const MAX_FILE_SIZE_IN_BYTES = 1024 * 1024; // 1 MB
 const ACCEPTED_MEDIA_TYPES = [
     "image/jpeg",
     "image/jpg",
@@ -25,7 +25,9 @@ const ACCEPTED_ZIP_TYPES = [
     "application/zip",
     "application/x-zip-compressed"
 ];
-const fileSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].any().refine((file)=>!file || file?.size <= MAX_FILE_SIZE, `O tamanho máximo do arquivo é 100MB.`).optional().nullable();
+const fileSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].any().refine((file)=>!file || file.size <= MAX_FILE_SIZE_IN_BYTES, {
+    message: `O tamanho máximo do arquivo é 1MB.`
+}).optional().nullable();
 const reportSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].object({
     clientName: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].string().min(1, 'Nome do cliente é obrigatório.'),
     technicianName: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].string().min(1, 'Nome do técnico é obrigatório.'),
@@ -420,8 +422,6 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$react$2d$hoo
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$hookform$2f$resolvers$2f$zod$2f$dist$2f$zod$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@hookform/resolvers/zod/dist/zod.mjs [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$firebase$2f$firestore$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/firebase/firestore/dist/index.mjs [app-ssr] (ecmascript) <module evaluation>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@firebase/firestore/dist/index.node.mjs [app-ssr] (ecmascript)");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$firebase$2f$storage$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/node_modules/firebase/storage/dist/index.mjs [app-ssr] (ecmascript) <module evaluation>");
-var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$storage$2f$dist$2f$node$2d$esm$2f$index$2e$node$2e$esm$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/@firebase/storage/dist/node-esm/index.node.esm.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$definitions$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/lib/definitions.ts [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$index$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$module__evaluation$3e$__ = __turbopack_context__.i("[project]/src/firebase/index.ts [app-ssr] (ecmascript) <module evaluation>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$provider$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/firebase/provider.tsx [app-ssr] (ecmascript)");
@@ -457,17 +457,12 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$errors$2e
 ;
 ;
 ;
-;
-async function uploadFile(file, folder) {
-    if (!file || file.size === 0) return null;
-    const storage = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$storage$2f$dist$2f$node$2d$esm$2f$index$2e$node$2e$esm$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getStorage"])();
-    const uniqueId = Date.now();
-    const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
-    const fileRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$storage$2f$dist$2f$node$2d$esm$2f$index$2e$node$2e$esm$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["ref"])(storage, filePath);
-    const snapshot = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$storage$2f$dist$2f$node$2d$esm$2f$index$2e$node$2e$esm$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["uploadBytes"])(fileRef, file);
-    const downloadUrl = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$storage$2f$dist$2f$node$2d$esm$2f$index$2e$node$2e$esm$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getDownloadURL"])(snapshot.ref);
-    return downloadUrl;
-}
+const fileToBase64 = (file)=>new Promise((resolve, reject)=>{
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = ()=>resolve(reader.result);
+        reader.onerror = (error)=>reject(error);
+    });
 function ErrorReportForm() {
     const { toast } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$hooks$2f$use$2d$toast$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useToast"])();
     const { auth, firestore, user, isUserLoading } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$provider$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useFirebase"])();
@@ -518,14 +513,14 @@ function ErrorReportForm() {
         let zipUrl = null;
         try {
             if (data.mediaFile) {
-                mediaUrl = await uploadFile(data.mediaFile, 'midia');
+                mediaUrl = await fileToBase64(data.mediaFile);
             }
             if (data.zipFile) {
-                zipUrl = await uploadFile(data.zipFile, 'banco_de_dados');
+                zipUrl = await fileToBase64(data.zipFile);
             }
         } catch (uploadError) {
-            console.error('Falha no upload do arquivo:', uploadError);
-            setFormError(`Falha no upload do arquivo: ${uploadError.message}`);
+            console.error('Falha na conversão do arquivo para Base64:', uploadError);
+            setFormError(`Falha na preparação do arquivo: ${uploadError.message}`);
             setIsSubmitting(false);
             return;
         }
@@ -539,7 +534,8 @@ function ErrorReportForm() {
             zipUrl: zipUrl,
             reportedByUserId: user.uid,
             generatedAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["serverTimestamp"])(),
-            status: 'open'
+            status: 'open',
+            appId: appId
         };
         (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["addDoc"])(reportsCollectionRef, reportData).then(()=>{
             toast({
@@ -548,14 +544,19 @@ function ErrorReportForm() {
             });
             form.reset();
         }).catch((error)=>{
-            const permissionError = new __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$errors$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FirestorePermissionError"]({
-                path: reportsCollectionRef.path,
-                operation: 'create',
-                requestResourceData: reportData
-            });
-            __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$error$2d$emitter$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["errorEmitter"].emit('permission-error', permissionError);
-            // Também exiba um erro genérico no formulário para o usuário
-            setFormError('Falha ao salvar o relatório no banco de dados. Verifique as permissões.');
+            console.error(error);
+            // FirebaseError: Request payload size exceeds the limit: X bytes.
+            if (error.code === 'invalid-argument') {
+                setFormError('O arquivo enviado é muito grande. O limite total do relatório é de 1MB.');
+            } else {
+                const permissionError = new __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$errors$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FirestorePermissionError"]({
+                    path: reportsCollectionRef.path,
+                    operation: 'create',
+                    requestResourceData: reportData
+                });
+                __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$firebase$2f$error$2d$emitter$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["errorEmitter"].emit('permission-error', permissionError);
+                setFormError('Falha ao salvar o relatório. Verifique as permissões ou o tamanho dos arquivos.');
+            }
         }).finally(()=>{
             setIsSubmitting(false);
         });
@@ -568,7 +569,7 @@ function ErrorReportForm() {
                     className: "mr-2 h-6 w-6 animate-spin"
                 }, void 0, false, {
                     fileName: "[project]/src/components/error-report-form.tsx",
-                    lineNumber: 155,
+                    lineNumber: 156,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -576,13 +577,13 @@ function ErrorReportForm() {
                     children: "Carregando autenticação..."
                 }, void 0, false, {
                     fileName: "[project]/src/components/error-report-form.tsx",
-                    lineNumber: 156,
+                    lineNumber: 157,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/error-report-form.tsx",
-            lineNumber: 154,
+            lineNumber: 155,
             columnNumber: 7
         }, this);
     }
@@ -597,27 +598,27 @@ function ErrorReportForm() {
                         className: "h-4 w-4"
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 165,
+                        lineNumber: 166,
                         columnNumber: 13
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertTitle"], {
                         children: "Falha no Envio"
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 166,
+                        lineNumber: 167,
                         columnNumber: 13
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDescription"], {
                         children: formError
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 167,
+                        lineNumber: 168,
                         columnNumber: 13
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/error-report-form.tsx",
-                lineNumber: 164,
+                lineNumber: 165,
                 columnNumber: 10
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -632,12 +633,12 @@ function ErrorReportForm() {
                                 type: "hidden"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 174,
+                                lineNumber: 175,
                                 columnNumber: 36
                             }, void 0)
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 171,
+                        lineNumber: 172,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -656,13 +657,13 @@ function ErrorReportForm() {
                                                         children: "*"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                                        lineNumber: 182,
+                                                        lineNumber: 183,
                                                         columnNumber: 44
                                                     }, void 0)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 182,
+                                                lineNumber: 183,
                                                 columnNumber: 17
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -671,28 +672,28 @@ function ErrorReportForm() {
                                                     ...field
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/error-report-form.tsx",
-                                                    lineNumber: 184,
+                                                    lineNumber: 185,
                                                     columnNumber: 21
                                                 }, void 0)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 183,
+                                                lineNumber: 184,
                                                 columnNumber: 17
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 186,
+                                                lineNumber: 187,
                                                 columnNumber: 17
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 181,
+                                        lineNumber: 182,
                                         columnNumber: 17
                                     }, void 0)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 177,
+                                lineNumber: 178,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -708,13 +709,13 @@ function ErrorReportForm() {
                                                         children: "*"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                                        lineNumber: 195,
+                                                        lineNumber: 196,
                                                         columnNumber: 44
                                                     }, void 0)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 195,
+                                                lineNumber: 196,
                                                 columnNumber: 17
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -723,34 +724,34 @@ function ErrorReportForm() {
                                                     ...field
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/error-report-form.tsx",
-                                                    lineNumber: 197,
+                                                    lineNumber: 198,
                                                     columnNumber: 21
                                                 }, void 0)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 196,
+                                                lineNumber: 197,
                                                 columnNumber: 17
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 199,
+                                                lineNumber: 200,
                                                 columnNumber: 17
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 194,
+                                        lineNumber: 195,
                                         columnNumber: 17
                                     }, void 0)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 190,
+                                lineNumber: 191,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 176,
+                        lineNumber: 177,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -766,13 +767,13 @@ function ErrorReportForm() {
                                                 children: "*"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 210,
+                                                lineNumber: 211,
                                                 columnNumber: 54
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 210,
+                                        lineNumber: 211,
                                         columnNumber: 15
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -781,28 +782,28 @@ function ErrorReportForm() {
                                             ...field
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/error-report-form.tsx",
-                                            lineNumber: 212,
+                                            lineNumber: 213,
                                             columnNumber: 17
                                         }, void 0)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 211,
+                                        lineNumber: 212,
                                         columnNumber: 15
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 214,
+                                        lineNumber: 215,
                                         columnNumber: 15
                                     }, void 0)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 209,
+                                lineNumber: 210,
                                 columnNumber: 13
                             }, void 0)
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 205,
+                        lineNumber: 206,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -815,7 +816,7 @@ function ErrorReportForm() {
                                         children: "Anexo de Mídia (Foto ou Vídeo)"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 224,
+                                        lineNumber: 225,
                                         columnNumber: 15
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -827,12 +828,12 @@ function ErrorReportForm() {
                                             className: "file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/error-report-form.tsx",
-                                            lineNumber: 226,
+                                            lineNumber: 227,
                                             columnNumber: 17
                                         }, void 0)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 225,
+                                        lineNumber: 226,
                                         columnNumber: 15
                                     }, void 0),
                                     mediaFile && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -842,7 +843,7 @@ function ErrorReportForm() {
                                                 className: "w-3 h-3 inline mr-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 230,
+                                                lineNumber: 231,
                                                 columnNumber: 98
                                             }, void 0),
                                             " ",
@@ -850,23 +851,23 @@ function ErrorReportForm() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 230,
+                                        lineNumber: 231,
                                         columnNumber: 29
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 231,
+                                        lineNumber: 232,
                                         columnNumber: 15
                                     }, void 0)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 223,
+                                lineNumber: 224,
                                 columnNumber: 13
                             }, void 0)
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 219,
+                        lineNumber: 220,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -879,7 +880,7 @@ function ErrorReportForm() {
                                         children: "Arquivo Zipado do Banco de Dados (.zip)"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 241,
+                                        lineNumber: 242,
                                         columnNumber: 15
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -891,12 +892,12 @@ function ErrorReportForm() {
                                             className: "file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/error-report-form.tsx",
-                                            lineNumber: 243,
+                                            lineNumber: 244,
                                             columnNumber: 17
                                         }, void 0)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 242,
+                                        lineNumber: 243,
                                         columnNumber: 15
                                     }, void 0),
                                     zipFile && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -906,7 +907,7 @@ function ErrorReportForm() {
                                                 className: "w-3 h-3 inline mr-1"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 247,
+                                                lineNumber: 248,
                                                 columnNumber: 96
                                             }, void 0),
                                             " ",
@@ -914,23 +915,23 @@ function ErrorReportForm() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 247,
+                                        lineNumber: 248,
                                         columnNumber: 27
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 248,
+                                        lineNumber: 249,
                                         columnNumber: 15
                                     }, void 0)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 240,
+                                lineNumber: 241,
                                 columnNumber: 13
                             }, void 0)
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 236,
+                        lineNumber: 237,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -947,13 +948,13 @@ function ErrorReportForm() {
                                                 children: "*"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                                lineNumber: 258,
+                                                lineNumber: 259,
                                                 columnNumber: 58
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 258,
+                                        lineNumber: 259,
                                         columnNumber: 15
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -963,28 +964,28 @@ function ErrorReportForm() {
                                             ...field
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/error-report-form.tsx",
-                                            lineNumber: 260,
+                                            lineNumber: 261,
                                             columnNumber: 17
                                         }, void 0)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 259,
+                                        lineNumber: 260,
                                         columnNumber: 15
                                     }, void 0),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 266,
+                                        lineNumber: 267,
                                         columnNumber: 15
                                     }, void 0)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 257,
+                                lineNumber: 258,
                                 columnNumber: 13
                             }, void 0)
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 253,
+                        lineNumber: 254,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -997,14 +998,14 @@ function ErrorReportForm() {
                                         className: "w-5 h-5 mr-2 text-primary"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
-                                        lineNumber: 273,
+                                        lineNumber: 274,
                                         columnNumber: 15
                                     }, this),
                                     "Data de Geração do Relatório:"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 272,
+                                lineNumber: 273,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1012,13 +1013,13 @@ function ErrorReportForm() {
                                 children: "Gerada automaticamente no envio."
                             }, void 0, false, {
                                 fileName: "[project]/src/components/error-report-form.tsx",
-                                lineNumber: 276,
+                                lineNumber: 277,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 271,
+                        lineNumber: 272,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1032,7 +1033,7 @@ function ErrorReportForm() {
                                     className: "mr-2 h-5 w-5 animate-spin"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/error-report-form.tsx",
-                                    lineNumber: 284,
+                                    lineNumber: 285,
                                     columnNumber: 15
                                 }, this),
                                 "Enviando..."
@@ -1043,7 +1044,7 @@ function ErrorReportForm() {
                                     className: "mr-2 h-5 w-5"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/error-report-form.tsx",
-                                    lineNumber: 289,
+                                    lineNumber: 290,
                                     columnNumber: 15
                                 }, this),
                                 "Gerar e Enviar Relatório"
@@ -1051,19 +1052,19 @@ function ErrorReportForm() {
                         }, void 0, true)
                     }, void 0, false, {
                         fileName: "[project]/src/components/error-report-form.tsx",
-                        lineNumber: 281,
+                        lineNumber: 282,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/error-report-form.tsx",
-                lineNumber: 170,
+                lineNumber: 171,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/error-report-form.tsx",
-        lineNumber: 162,
+        lineNumber: 163,
         columnNumber: 5
     }, this);
 }
@@ -1552,11 +1553,15 @@ function ReportItem({ report }) {
             zipFile: undefined
         }
     });
-    const isImage = report.mediaUrl && !report.mediaUrl.startsWith('data:video');
+    const isImage = report.mediaUrl && report.mediaUrl.startsWith('data:image');
     const isVideo = report.mediaUrl && report.mediaUrl.startsWith('data:video');
     const handleStatusChange = async ()=>{
         if (!firestore) return;
-        const reportRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(firestore, `artifacts/${("TURBOPACK compile-time value", "1:150343238205:web:6549f1bfcf2ec29176a054")}/public/data/error_reports`, report.id);
+        const appId = ("TURBOPACK compile-time value", "1:150343238205:web:6549f1bfcf2ec29176a054");
+        if ("TURBOPACK compile-time falsy", 0) {
+            "TURBOPACK unreachable";
+        }
+        const reportRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(firestore, `artifacts/${appId}/public/data/error_reports`, report.id);
         const newStatus = report.status === 'open' ? 'concluded' : 'open';
         (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["updateDoc"])(reportRef, {
             status: newStatus
@@ -1578,7 +1583,11 @@ function ReportItem({ report }) {
     };
     const handleDelete = async ()=>{
         if (!firestore) return;
-        const reportRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(firestore, `artifacts/${("TURBOPACK compile-time value", "1:150343238205:web:6549f1bfcf2ec29176a054")}/public/data/error_reports`, report.id);
+        const appId = ("TURBOPACK compile-time value", "1:150343238205:web:6549f1bfcf2ec29176a054");
+        if ("TURBOPACK compile-time falsy", 0) {
+            "TURBOPACK unreachable";
+        }
+        const reportRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(firestore, `artifacts/${appId}/public/data/error_reports`, report.id);
         (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["deleteDoc"])(reportRef).then(()=>{
             toast({
                 title: 'Relatório Excluído',
@@ -1626,7 +1635,8 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
         URL.revokeObjectURL(url);
     };
     const getFileName = (fileType)=>{
-        const date = report.generatedAt ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm') : 'data_desconhecida';
+        if (!report.generatedAt) return 'download';
+        const date = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(report.generatedAt.toDate(), 'yyyy-MM-dd_HH-mm');
         if (fileType === 'media') {
             if (isImage) return `media_${report.clientName}_${date}.png`;
             if (isVideo) return `media_${report.clientName}_${date}.mp4`;
@@ -1639,7 +1649,11 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
     const onUpdate = async (data)=>{
         if (!firestore) return;
         setIsUpdating(true);
-        const reportRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(firestore, `artifacts/${("TURBOPACK compile-time value", "1:150343238205:web:6549f1bfcf2ec29176a054")}/public/data/error_reports`, report.id);
+        const appId = ("TURBOPACK compile-time value", "1:150343238205:web:6549f1bfcf2ec29176a054");
+        if ("TURBOPACK compile-time falsy", 0) {
+            "TURBOPACK unreachable";
+        }
+        const reportRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(firestore, `artifacts/${appId}/public/data/error_reports`, report.id);
         // We only update the text fields. File uploads are not part of the edit functionality for simplicity.
         const updatedData = {
             clientName: data.clientName,
@@ -1679,27 +1693,27 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 205,
+                                lineNumber: 214,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                 children: "Ajuste as informações do relatório abaixo."
                             }, void 0, false, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 206,
+                                lineNumber: 215,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/report-list.tsx",
-                        lineNumber: 204,
+                        lineNumber: 213,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Separator"], {
                         className: "my-4"
                     }, void 0, false, {
                         fileName: "[project]/src/components/report-list.tsx",
-                        lineNumber: 210,
+                        lineNumber: 219,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1714,7 +1728,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 children: "Nome do Cliente"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 217,
+                                                lineNumber: 226,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -1722,28 +1736,28 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     ...field
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 218,
+                                                    lineNumber: 227,
                                                     columnNumber: 46
                                                 }, void 0)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 218,
+                                                lineNumber: 227,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 219,
+                                                lineNumber: 228,
                                                 columnNumber: 33
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 216,
+                                        lineNumber: 225,
                                         columnNumber: 29
                                     }, void 0)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 212,
+                                lineNumber: 221,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1755,7 +1769,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 children: "Nome do Técnico"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 228,
+                                                lineNumber: 237,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -1763,28 +1777,28 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     ...field
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 229,
+                                                    lineNumber: 238,
                                                     columnNumber: 46
                                                 }, void 0)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 229,
+                                                lineNumber: 238,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 230,
+                                                lineNumber: 239,
                                                 columnNumber: 33
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 227,
+                                        lineNumber: 236,
                                         columnNumber: 29
                                     }, void 0)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 223,
+                                lineNumber: 232,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1796,7 +1810,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 children: "Data do Erro"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 239,
+                                                lineNumber: 248,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -1805,28 +1819,28 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     ...field
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 240,
+                                                    lineNumber: 249,
                                                     columnNumber: 46
                                                 }, void 0)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 240,
+                                                lineNumber: 249,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 241,
+                                                lineNumber: 250,
                                                 columnNumber: 33
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 238,
+                                        lineNumber: 247,
                                         columnNumber: 29
                                     }, void 0)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 234,
+                                lineNumber: 243,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormField"], {
@@ -1838,7 +1852,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 children: "Relatório Detalhado"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 250,
+                                                lineNumber: 259,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
@@ -1847,41 +1861,41 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     ...field
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 251,
+                                                    lineNumber: 260,
                                                     columnNumber: 46
                                                 }, void 0)
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 251,
+                                                lineNumber: 260,
                                                 columnNumber: 33
                                             }, void 0),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormMessage"], {}, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 252,
+                                                lineNumber: 261,
                                                 columnNumber: 33
                                             }, void 0)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 249,
+                                        lineNumber: 258,
                                         columnNumber: 29
                                     }, void 0)
                             }, void 0, false, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 245,
+                                lineNumber: 254,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/report-list.tsx",
-                        lineNumber: 211,
+                        lineNumber: 220,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Separator"], {
                         className: "mt-4"
                     }, void 0, false, {
                         fileName: "[project]/src/components/report-list.tsx",
-                        lineNumber: 257,
+                        lineNumber: 266,
                         columnNumber: 17
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -1896,14 +1910,14 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                         className: "mr-2 h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 259,
+                                        lineNumber: 268,
                                         columnNumber: 95
                                     }, this),
                                     " Cancelar"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 259,
+                                lineNumber: 268,
                                 columnNumber: 21
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -1914,37 +1928,37 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                         className: "mr-2 h-4 w-4 animate-spin"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 261,
+                                        lineNumber: 270,
                                         columnNumber: 39
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$save$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Save$3e$__["Save"], {
                                         className: "mr-2 h-4 w-4"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 261,
+                                        lineNumber: 270,
                                         columnNumber: 91
                                     }, this),
                                     "Salvar Alterações"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 260,
+                                lineNumber: 269,
                                 columnNumber: 21
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/report-list.tsx",
-                        lineNumber: 258,
+                        lineNumber: 267,
                         columnNumber: 17
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/report-list.tsx",
-                lineNumber: 203,
+                lineNumber: 212,
                 columnNumber: 13
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/report-list.tsx",
-            lineNumber: 202,
+            lineNumber: 211,
             columnNumber: 9
         }, this);
     const DetailView = ()=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Fragment"], {
@@ -1956,7 +1970,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                             children: report.clientName
                         }, void 0, false, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 272,
+                            lineNumber: 281,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogDescription"], {
@@ -1966,18 +1980,18 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 273,
+                            lineNumber: 282,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 271,
+                    lineNumber: 280,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 277,
+                    lineNumber: 286,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1993,7 +2007,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                             children: "Data do Erro"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 280,
+                                            lineNumber: 289,
                                             columnNumber: 26
                                         }, this),
                                         " ",
@@ -2001,7 +2015,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 280,
+                                    lineNumber: 289,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2011,7 +2025,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                             children: "Data de Geração"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 281,
+                                            lineNumber: 290,
                                             columnNumber: 26
                                         }, this),
                                         " ",
@@ -2019,13 +2033,13 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 281,
+                                    lineNumber: 290,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 279,
+                            lineNumber: 288,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2035,7 +2049,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                     children: "Status do Relatório"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 284,
+                                    lineNumber: 293,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2045,26 +2059,26 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 286,
+                                            lineNumber: 295,
                                             columnNumber: 54
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Circle$3e$__["Circle"], {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 286,
+                                            lineNumber: 295,
                                             columnNumber: 92
                                         }, this),
                                         report.status === 'concluded' ? 'Concluído' : 'Aberto'
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 285,
+                                    lineNumber: 294,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 283,
+                            lineNumber: 292,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2074,7 +2088,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                     children: "Relatório Detalhado"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 292,
+                                    lineNumber: 301,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2082,13 +2096,13 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                     children: report.reportText
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 293,
+                                    lineNumber: 302,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 291,
+                            lineNumber: 300,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2098,7 +2112,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                     children: "Anexos"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 297,
+                                    lineNumber: 306,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2116,21 +2130,21 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                         className: "mr-2 h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 302,
+                                                        lineNumber: 311,
                                                         columnNumber: 49
                                                     }, this),
                                                     isVideo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$video$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Video$3e$__["Video"], {
                                                         className: "mr-2 h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 303,
+                                                        lineNumber: 312,
                                                         columnNumber: 49
                                                     }, this),
                                                     !isImage && !isVideo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$text$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__FileText$3e$__["FileText"], {
                                                         className: "mr-2 h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 304,
+                                                        lineNumber: 313,
                                                         columnNumber: 62
                                                     }, this),
                                                     "Baixar Mídia",
@@ -2138,25 +2152,25 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                         className: "ml-2 h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 306,
+                                                        lineNumber: 315,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 301,
+                                                lineNumber: 310,
                                                 columnNumber: 33
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 300,
+                                            lineNumber: 309,
                                             columnNumber: 29
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-xs text-muted-foreground",
                                             children: "Nenhuma mídia anexada."
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 309,
+                                            lineNumber: 318,
                                             columnNumber: 29
                                         }, this),
                                         report.zipUrl ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -2171,7 +2185,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                         className: "mr-2 h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 314,
+                                                        lineNumber: 323,
                                                         columnNumber: 37
                                                     }, this),
                                                     "Baixar ZIP",
@@ -2179,48 +2193,48 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                         className: "ml-2 h-4 w-4"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 316,
+                                                        lineNumber: 325,
                                                         columnNumber: 37
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 313,
+                                                lineNumber: 322,
                                                 columnNumber: 33
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 312,
+                                            lineNumber: 321,
                                             columnNumber: 29
                                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                             className: "text-xs text-muted-foreground",
                                             children: "Nenhum ZIP anexado."
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 319,
+                                            lineNumber: 328,
                                             columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 298,
+                                    lineNumber: 307,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 296,
+                            lineNumber: 305,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 278,
+                    lineNumber: 287,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 323,
+                    lineNumber: 332,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -2238,19 +2252,19 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 className: "mr-2 h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 327,
+                                                lineNumber: 336,
                                                 columnNumber: 65
                                             }, this),
                                             " Excluir"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 327,
+                                        lineNumber: 336,
                                         columnNumber: 25
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 326,
+                                    lineNumber: 335,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialogContent"], {
@@ -2261,20 +2275,20 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     children: "Você tem certeza?"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 331,
+                                                    lineNumber: 340,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialogDescription"], {
                                                     children: "Esta ação não pode ser desfeita. Isso excluirá permanentemente o relatório."
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 332,
+                                                    lineNumber: 341,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 330,
+                                            lineNumber: 339,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialogFooter"], {
@@ -2283,7 +2297,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     children: "Cancelar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 337,
+                                                    lineNumber: 346,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDialogAction"], {
@@ -2291,25 +2305,25 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     children: "Continuar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 338,
+                                                    lineNumber: 347,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 336,
+                                            lineNumber: 345,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 329,
+                                    lineNumber: 338,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 325,
+                            lineNumber: 334,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2324,14 +2338,14 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                             className: "mr-2 h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 344,
+                                            lineNumber: 353,
                                             columnNumber: 92
                                         }, this),
                                         " Editar"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 344,
+                                    lineNumber: 353,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Button"], {
@@ -2343,14 +2357,14 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                             className: "mr-2 h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 345,
+                                            lineNumber: 354,
                                             columnNumber: 84
                                         }, this),
                                         " Baixar (.txt)"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 345,
+                                    lineNumber: 354,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogClose"], {
@@ -2364,7 +2378,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 350,
+                                                    lineNumber: 359,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Marcar como Concluído"
@@ -2375,7 +2389,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 355,
+                                                    lineNumber: 364,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Reabrir Relatório"
@@ -2383,24 +2397,24 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                         }, void 0, true)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 347,
+                                        lineNumber: 356,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 346,
+                                    lineNumber: 355,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 343,
+                            lineNumber: 352,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 324,
+                    lineNumber: 333,
                     columnNumber: 13
                 }, this)
             ]
@@ -2424,7 +2438,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 children: report.clientName
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 374,
+                                                lineNumber: 383,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -2434,13 +2448,13 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 375,
+                                                lineNumber: 384,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 373,
+                                        lineNumber: 382,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2450,7 +2464,7 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                 children: report.errorDate ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(report.errorDate), 'dd/MM/yyyy') : 'Data inválida'
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 378,
+                                                lineNumber: 387,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2460,37 +2474,37 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                                         className: "h-4 w-4 text-green-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 381,
+                                                        lineNumber: 390,
                                                         columnNumber: 37
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$export__default__as__Circle$3e$__["Circle"], {
                                                         className: "h-4 w-4 text-amber-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 383,
+                                                        lineNumber: 392,
                                                         columnNumber: 37
                                                     }, this),
                                                     report.status === 'concluded' ? 'Concluído' : 'Aberto'
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 379,
+                                                lineNumber: 388,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 377,
+                                        lineNumber: 386,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 372,
+                                lineNumber: 381,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 371,
+                            lineNumber: 380,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2499,45 +2513,45 @@ ZIP: ${report.zipUrl ? 'Anexo disponível' : 'Nenhum'}
                                 children: report.reportText
                             }, void 0, false, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 391,
+                                lineNumber: 400,
                                 columnNumber: 26
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 390,
+                            lineNumber: 399,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 370,
+                    lineNumber: 379,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/report-list.tsx",
-                lineNumber: 369,
+                lineNumber: 378,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["DialogContent"], {
                 className: "max-w-2xl",
                 children: isEditing ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(EditView, {}, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 396,
+                    lineNumber: 405,
                     columnNumber: 30
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(DetailView, {}, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 396,
+                    lineNumber: 405,
                     columnNumber: 45
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/report-list.tsx",
-                lineNumber: 395,
+                lineNumber: 404,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/report-list.tsx",
-        lineNumber: 368,
+        lineNumber: 377,
         columnNumber: 9
     }, this);
 }
@@ -2560,27 +2574,27 @@ function ReportList() {
                     className: "h-32 w-full"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 420,
+                    lineNumber: 429,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Skeleton"], {
                     className: "h-32 w-full"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 421,
+                    lineNumber: 430,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Skeleton"], {
                     className: "h-32 w-full"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 422,
+                    lineNumber: 431,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/report-list.tsx",
-            lineNumber: 419,
+            lineNumber: 428,
             columnNumber: 9
         }, this);
     }
@@ -2592,14 +2606,14 @@ function ReportList() {
                     className: "h-4 w-4"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 430,
+                    lineNumber: 439,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertTitle"], {
                     children: "Erro ao Carregar Relatórios"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 431,
+                    lineNumber: 440,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["AlertDescription"], {
@@ -2610,19 +2624,19 @@ function ReportList() {
                             children: error.message
                         }, void 0, false, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 434,
+                            lineNumber: 443,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 432,
+                    lineNumber: 441,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/report-list.tsx",
-            lineNumber: 429,
+            lineNumber: 438,
             columnNumber: 7
         }, this);
     }
@@ -2634,7 +2648,7 @@ function ReportList() {
                     className: "mx-auto h-12 w-12 text-muted-foreground"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 443,
+                    lineNumber: 452,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -2642,7 +2656,7 @@ function ReportList() {
                     children: "Nenhum relatório encontrado"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 444,
+                    lineNumber: 453,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2650,13 +2664,13 @@ function ReportList() {
                     children: "Nenhum relatório foi enviado ainda."
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 445,
+                    lineNumber: 454,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/report-list.tsx",
-            lineNumber: 442,
+            lineNumber: 451,
             columnNumber: 9
         }, this);
     }
@@ -2666,12 +2680,12 @@ function ReportList() {
                 report: report
             }, report.id, false, {
                 fileName: "[project]/src/components/report-list.tsx",
-                lineNumber: 453,
+                lineNumber: 462,
                 columnNumber: 9
             }, this))
     }, void 0, false, {
         fileName: "[project]/src/components/report-list.tsx",
-        lineNumber: 451,
+        lineNumber: 460,
         columnNumber: 5
     }, this);
 }

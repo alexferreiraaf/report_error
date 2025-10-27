@@ -5,7 +5,6 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { collection, serverTimestamp, addDoc } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { reportSchema } from '@/lib/definitions';
 import { useFirebase } from '@/firebase';
@@ -29,18 +28,14 @@ import { FirestorePermissionError } from '@/firebase/errors';
 
 type ReportFormValues = z.infer<typeof reportSchema>;
 
-async function uploadFile(file: File, folder: string): Promise<string | null> {
-    if (!file || file.size === 0) return null;
-    const storage = getStorage();
-    const uniqueId = Date.now();
-    const filePath = `error_reports/${folder}/${uniqueId}_${file.name}`;
-    const fileRef = ref(storage, filePath);
-  
-    const snapshot = await uploadBytes(fileRef, file);
-    const downloadUrl = await getDownloadURL(snapshot.ref);
-  
-    return downloadUrl;
-  }
+const fileToBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+
 
 export function ErrorReportForm() {
   const { toast } = useToast();
@@ -98,14 +93,14 @@ export function ErrorReportForm() {
     
     try {
         if (data.mediaFile) {
-            mediaUrl = await uploadFile(data.mediaFile, 'midia');
+            mediaUrl = await fileToBase64(data.mediaFile);
         }
         if (data.zipFile) {
-            zipUrl = await uploadFile(data.zipFile, 'banco_de_dados');
+            zipUrl = await fileToBase64(data.zipFile);
         }
     } catch (uploadError: any) {
-        console.error('Falha no upload do arquivo:', uploadError);
-        setFormError(`Falha no upload do arquivo: ${uploadError.message}`);
+        console.error('Falha na conversão do arquivo para Base64:', uploadError);
+        setFormError(`Falha na preparação do arquivo: ${uploadError.message}`);
         setIsSubmitting(false);
         return;
     }
@@ -123,6 +118,7 @@ export function ErrorReportForm() {
       reportedByUserId: user.uid,
       generatedAt: serverTimestamp(),
       status: 'open',
+      appId: appId,
     };
       
     addDoc(reportsCollectionRef, reportData)
@@ -134,15 +130,20 @@ export function ErrorReportForm() {
             form.reset();
         })
         .catch((error) => {
-            const permissionError = new FirestorePermissionError({
-                path: reportsCollectionRef.path,
-                operation: 'create',
-                requestResourceData: reportData,
-            });
-            errorEmitter.emit('permission-error', permissionError);
+            console.error(error);
+            // FirebaseError: Request payload size exceeds the limit: X bytes.
+             if (error.code === 'invalid-argument') {
+                setFormError('O arquivo enviado é muito grande. O limite total do relatório é de 1MB.');
+            } else {
+                const permissionError = new FirestorePermissionError({
+                    path: reportsCollectionRef.path,
+                    operation: 'create',
+                    requestResourceData: reportData,
+                });
+                errorEmitter.emit('permission-error', permissionError);
 
-            // Também exiba um erro genérico no formulário para o usuário
-            setFormError('Falha ao salvar o relatório no banco de dados. Verifique as permissões.');
+                setFormError('Falha ao salvar o relatório. Verifique as permissões ou o tamanho dos arquivos.');
+            }
         })
         .finally(() => {
             setIsSubmitting(false);
@@ -295,3 +296,5 @@ export function ErrorReportForm() {
     </Form>
   );
 }
+
+    

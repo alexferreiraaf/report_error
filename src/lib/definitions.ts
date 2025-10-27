@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+const MAX_FILE_SIZE_IN_BYTES = 1024 * 1024; // 1 MB
 const ACCEPTED_MEDIA_TYPES = [
   "image/jpeg",
   "image/jpg",
@@ -15,7 +15,9 @@ const ACCEPTED_ZIP_TYPES = ["application/zip", "application/x-zip-compressed"];
 
 const fileSchema = z
   .any()
-  .refine((file) => !file || file?.size <= MAX_FILE_SIZE, `O tamanho máximo do arquivo é 100MB.`)
+  .refine((file) => !file || file.size <= MAX_FILE_SIZE_IN_BYTES, {
+      message: `O tamanho máximo do arquivo é 1MB.`
+  })
   .optional()
   .nullable();
 
@@ -35,3 +37,5 @@ export const reportSchema = z.object({
   reportedByUserId: z.string(),
   status: z.enum(['open', 'concluded']).default('open'),
 });
+
+    
