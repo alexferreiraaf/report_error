@@ -2530,7 +2530,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "grid grid-cols-2 gap-4",
+                            className: "space-y-4",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     children: [
@@ -2542,67 +2542,87 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                             lineNumber: 339,
                                             columnNumber: 25
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex gap-2 flex-wrap",
-                                            children: report.mediaUrl ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
-                                                asChild: true,
-                                                variant: "outline",
-                                                size: "sm",
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
-                                                    href: report.mediaUrl,
-                                                    download: getFileName('media'),
-                                                    children: [
-                                                        isImage && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Image$3e$__["Image"], {
-                                                            className: "mr-2 h-4 w-4"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/components/report-list.tsx",
-                                                            lineNumber: 344,
-                                                            columnNumber: 53
-                                                        }, this),
-                                                        isVideo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$video$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Video$3e$__["Video"], {
-                                                            className: "mr-2 h-4 w-4"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/components/report-list.tsx",
-                                                            lineNumber: 345,
-                                                            columnNumber: 53
-                                                        }, this),
-                                                        !isImage && !isVideo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$text$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileText$3e$__["FileText"], {
-                                                            className: "mr-2 h-4 w-4"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/components/report-list.tsx",
-                                                            lineNumber: 346,
-                                                            columnNumber: 66
-                                                        }, this),
-                                                        "Baixar Mídia",
-                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$download$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Download$3e$__["Download"], {
-                                                            className: "ml-2 h-4 w-4"
-                                                        }, void 0, false, {
-                                                            fileName: "[project]/src/components/report-list.tsx",
-                                                            lineNumber: 348,
-                                                            columnNumber: 41
-                                                        }, this)
-                                                    ]
-                                                }, void 0, true, {
+                                        report.mediaUrl ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "space-y-2",
+                                            children: [
+                                                isImage && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
+                                                    src: report.mediaUrl,
+                                                    alt: "Anexo de mídia",
+                                                    className: "rounded-lg border max-w-full h-auto"
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/report-list.tsx",
+                                                    lineNumber: 342,
+                                                    columnNumber: 45
+                                                }, this),
+                                                isVideo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("video", {
+                                                    src: report.mediaUrl,
+                                                    controls: true,
+                                                    className: "rounded-lg border max-w-full h-auto"
+                                                }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
                                                     lineNumber: 343,
-                                                    columnNumber: 37
+                                                    columnNumber: 45
+                                                }, this),
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
+                                                    asChild: true,
+                                                    variant: "outline",
+                                                    size: "sm",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
+                                                        href: report.mediaUrl,
+                                                        download: getFileName('media'),
+                                                        children: [
+                                                            isImage && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$image$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Image$3e$__["Image"], {
+                                                                className: "mr-2 h-4 w-4"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/report-list.tsx",
+                                                                lineNumber: 346,
+                                                                columnNumber: 53
+                                                            }, this),
+                                                            isVideo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$video$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Video$3e$__["Video"], {
+                                                                className: "mr-2 h-4 w-4"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/report-list.tsx",
+                                                                lineNumber: 347,
+                                                                columnNumber: 53
+                                                            }, this),
+                                                            !isImage && !isVideo && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$text$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileText$3e$__["FileText"], {
+                                                                className: "mr-2 h-4 w-4"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/report-list.tsx",
+                                                                lineNumber: 348,
+                                                                columnNumber: 66
+                                                            }, this),
+                                                            "Baixar Mídia",
+                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$download$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Download$3e$__["Download"], {
+                                                                className: "ml-2 h-4 w-4"
+                                                            }, void 0, false, {
+                                                                fileName: "[project]/src/components/report-list.tsx",
+                                                                lineNumber: 350,
+                                                                columnNumber: 41
+                                                            }, this)
+                                                        ]
+                                                    }, void 0, true, {
+                                                        fileName: "[project]/src/components/report-list.tsx",
+                                                        lineNumber: 345,
+                                                        columnNumber: 37
+                                                    }, this)
+                                                }, void 0, false, {
+                                                    fileName: "[project]/src/components/report-list.tsx",
+                                                    lineNumber: 344,
+                                                    columnNumber: 33
                                                 }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 342,
-                                                columnNumber: 33
-                                            }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                                className: "text-xs text-muted-foreground",
-                                                children: "Nenhuma mídia anexada."
-                                            }, void 0, false, {
-                                                fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 351,
-                                                columnNumber: 33
-                                            }, this)
+                                            ]
+                                        }, void 0, true, {
+                                            fileName: "[project]/src/components/report-list.tsx",
+                                            lineNumber: 341,
+                                            columnNumber: 29
+                                        }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                            className: "text-xs text-muted-foreground",
+                                            children: "Nenhuma mídia anexada."
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 340,
-                                            columnNumber: 25
+                                            lineNumber: 354,
+                                            columnNumber: 29
                                         }, this)
                                     ]
                                 }, void 0, true, {
@@ -2617,7 +2637,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                             children: "Banco de dados salvo no PC?"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 355,
+                                            lineNumber: 357,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2627,7 +2647,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                     className: "h-4 w-4 text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 357,
+                                                    lineNumber: 359,
                                                     columnNumber: 29
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2635,19 +2655,19 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                     children: report.databaseSavedOnPC
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 358,
+                                                    lineNumber: 360,
                                                     columnNumber: 29
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 356,
+                                            lineNumber: 358,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 354,
+                                    lineNumber: 356,
                                     columnNumber: 21
                                 }, this)
                             ]
@@ -2664,7 +2684,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 363,
+                    lineNumber: 365,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -2682,19 +2702,19 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                 className: "mr-2 h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 367,
+                                                lineNumber: 369,
                                                 columnNumber: 65
                                             }, this),
                                             " Excluir"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 367,
+                                        lineNumber: 369,
                                         columnNumber: 25
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 366,
+                                    lineNumber: 368,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AlertDialogContent"], {
@@ -2705,20 +2725,20 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                     children: "Você tem certeza?"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 371,
+                                                    lineNumber: 373,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AlertDialogDescription"], {
                                                     children: "Esta ação não pode ser desfeita. Isso excluirá permanentemente o relatório."
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 372,
+                                                    lineNumber: 374,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 370,
+                                            lineNumber: 372,
                                             columnNumber: 25
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AlertDialogFooter"], {
@@ -2727,7 +2747,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                     children: "Cancelar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 377,
+                                                    lineNumber: 379,
                                                     columnNumber: 25
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2d$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AlertDialogAction"], {
@@ -2735,25 +2755,25 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                     children: "Continuar"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 378,
+                                                    lineNumber: 380,
                                                     columnNumber: 25
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 376,
+                                            lineNumber: 378,
                                             columnNumber: 25
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 369,
+                                    lineNumber: 371,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 365,
+                            lineNumber: 367,
                             columnNumber: 17
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2768,14 +2788,14 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                             className: "mr-2 h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 384,
+                                            lineNumber: 386,
                                             columnNumber: 92
                                         }, this),
                                         " Editar"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 384,
+                                    lineNumber: 386,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -2787,14 +2807,14 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                             className: "mr-2 h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/report-list.tsx",
-                                            lineNumber: 385,
+                                            lineNumber: 387,
                                             columnNumber: 84
                                         }, this),
                                         " Baixar (.txt)"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 385,
+                                    lineNumber: 387,
                                     columnNumber: 21
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogClose"], {
@@ -2808,7 +2828,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 390,
+                                                    lineNumber: 392,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Marcar como Concluído"
@@ -2819,7 +2839,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                     className: "mr-2 h-4 w-4"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/report-list.tsx",
-                                                    lineNumber: 395,
+                                                    lineNumber: 397,
                                                     columnNumber: 37
                                                 }, this),
                                                 "Reabrir Relatório"
@@ -2827,24 +2847,24 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                         }, void 0, true)
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 387,
+                                        lineNumber: 389,
                                         columnNumber: 29
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/report-list.tsx",
-                                    lineNumber: 386,
+                                    lineNumber: 388,
                                     columnNumber: 21
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 383,
+                            lineNumber: 385,
                             columnNumber: 17
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 364,
+                    lineNumber: 366,
                     columnNumber: 13
                 }, this)
             ]
@@ -2868,7 +2888,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                 children: report.clientName
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 414,
+                                                lineNumber: 416,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -2878,13 +2898,13 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 415,
+                                                lineNumber: 417,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 413,
+                                        lineNumber: 415,
                                         columnNumber: 29
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2894,7 +2914,7 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                 children: report.errorDate ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$date$2d$fns$2f$format$2e$mjs__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__["format"])(new Date(report.errorDate), 'dd/MM/yyyy') : 'Data inválida'
                                             }, void 0, false, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 418,
+                                                lineNumber: 420,
                                                 columnNumber: 33
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2904,37 +2924,37 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                                         className: "h-4 w-4 text-green-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 421,
+                                                        lineNumber: 423,
                                                         columnNumber: 37
                                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Circle$3e$__["Circle"], {
                                                         className: "h-4 w-4 text-amber-500"
                                                     }, void 0, false, {
                                                         fileName: "[project]/src/components/report-list.tsx",
-                                                        lineNumber: 423,
+                                                        lineNumber: 425,
                                                         columnNumber: 37
                                                     }, this),
                                                     report.status === 'concluded' ? 'Concluído' : 'Aberto'
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/src/components/report-list.tsx",
-                                                lineNumber: 419,
+                                                lineNumber: 421,
                                                 columnNumber: 33
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/components/report-list.tsx",
-                                        lineNumber: 417,
+                                        lineNumber: 419,
                                         columnNumber: 29
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 412,
+                                lineNumber: 414,
                                 columnNumber: 25
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 411,
+                            lineNumber: 413,
                             columnNumber: 21
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2943,45 +2963,45 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                 children: report.reportText
                             }, void 0, false, {
                                 fileName: "[project]/src/components/report-list.tsx",
-                                lineNumber: 431,
+                                lineNumber: 433,
                                 columnNumber: 26
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 430,
+                            lineNumber: 432,
                             columnNumber: 21
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 410,
+                    lineNumber: 412,
                     columnNumber: 17
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/report-list.tsx",
-                lineNumber: 409,
+                lineNumber: 411,
                 columnNumber: 13
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogContent"], {
                 className: "max-w-2xl",
                 children: isEditing ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EditView, {}, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 436,
+                    lineNumber: 438,
                     columnNumber: 30
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(DetailView, {}, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 436,
+                    lineNumber: 438,
                     columnNumber: 45
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/components/report-list.tsx",
-                lineNumber: 435,
+                lineNumber: 437,
                 columnNumber: 13
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/components/report-list.tsx",
-        lineNumber: 408,
+        lineNumber: 410,
         columnNumber: 9
     }, this);
 }
@@ -3015,27 +3035,27 @@ function ReportList() {
                     className: "h-32 w-full"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 460,
-                    columnNumber: 13
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
-                    className: "h-32 w-full"
-                }, void 0, false, {
-                    fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 461,
-                    columnNumber: 13
-                }, this),
-                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
-                    className: "h-32 w-full"
-                }, void 0, false, {
-                    fileName: "[project]/src/components/report-list.tsx",
                     lineNumber: 462,
+                    columnNumber: 13
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
+                    className: "h-32 w-full"
+                }, void 0, false, {
+                    fileName: "[project]/src/components/report-list.tsx",
+                    lineNumber: 463,
+                    columnNumber: 13
+                }, this),
+                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$skeleton$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Skeleton"], {
+                    className: "h-32 w-full"
+                }, void 0, false, {
+                    fileName: "[project]/src/components/report-list.tsx",
+                    lineNumber: 464,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/report-list.tsx",
-            lineNumber: 459,
+            lineNumber: 461,
             columnNumber: 9
         }, this);
     }
@@ -3047,14 +3067,14 @@ function ReportList() {
                     className: "h-4 w-4"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 470,
+                    lineNumber: 472,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AlertTitle"], {
                     children: "Erro ao Carregar Relatórios"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 471,
+                    lineNumber: 473,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$alert$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["AlertDescription"], {
@@ -3065,19 +3085,19 @@ function ReportList() {
                             children: error.message
                         }, void 0, false, {
                             fileName: "[project]/src/components/report-list.tsx",
-                            lineNumber: 474,
+                            lineNumber: 476,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 472,
+                    lineNumber: 474,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/report-list.tsx",
-            lineNumber: 469,
+            lineNumber: 471,
             columnNumber: 7
         }, this);
     }
@@ -3089,7 +3109,7 @@ function ReportList() {
                     className: "mx-auto h-12 w-12 text-muted-foreground"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 483,
+                    lineNumber: 485,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
@@ -3097,7 +3117,7 @@ function ReportList() {
                     children: "Nenhum relatório encontrado"
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 484,
+                    lineNumber: 486,
                     columnNumber: 13
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3105,13 +3125,13 @@ function ReportList() {
                     children: "Nenhum relatório foi enviado ainda."
                 }, void 0, false, {
                     fileName: "[project]/src/components/report-list.tsx",
-                    lineNumber: 485,
+                    lineNumber: 487,
                     columnNumber: 13
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/report-list.tsx",
-            lineNumber: 482,
+            lineNumber: 484,
             columnNumber: 9
         }, this);
     }
@@ -3121,12 +3141,12 @@ function ReportList() {
                 report: report
             }, report.id, false, {
                 fileName: "[project]/src/components/report-list.tsx",
-                lineNumber: 493,
+                lineNumber: 495,
                 columnNumber: 9
             }, this))
     }, void 0, false, {
         fileName: "[project]/src/components/report-list.tsx",
-        lineNumber: 491,
+        lineNumber: 493,
         columnNumber: 5
     }, this);
 }

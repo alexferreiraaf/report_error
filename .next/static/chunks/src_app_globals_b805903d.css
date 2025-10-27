@@ -698,6 +698,10 @@ body {
   height: 100svh;
 }
 
+.h-auto {
+  height: auto;
+}
+
 .max-h-96 {
   max-height: 24rem;
 }
@@ -856,6 +860,10 @@ body {
 
 .max-w-sm {
   max-width: 24rem;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .flex-1 {

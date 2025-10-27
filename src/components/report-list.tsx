@@ -334,11 +334,13 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                     <p className="text-sm bg-muted/50 p-4 rounded-md border whitespace-pre-wrap">{report.reportText}</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                     <div>
                         <strong className='block text-muted-foreground mb-2'>Anexo de Mídia</strong>
-                        <div className="flex gap-2 flex-wrap">
                         {report.mediaUrl ? (
+                            <div className="space-y-2">
+                                {isImage && <img src={report.mediaUrl} alt="Anexo de mídia" className="rounded-lg border max-w-full h-auto" />}
+                                {isVideo && <video src={report.mediaUrl} controls className="rounded-lg border max-w-full h-auto" />}
                                 <Button asChild variant="outline" size="sm">
                                     <a href={report.mediaUrl} download={getFileName('media')}>
                                         {isImage && <Image className="mr-2 h-4 w-4" />}
@@ -348,8 +350,8 @@ Mídia: ${report.mediaUrl ? 'Anexo disponível para download' : 'Nenhum'}
                                         <Download className="ml-2 h-4 w-4" />
                                     </a>
                                 </Button>
-                            ) : <p className='text-xs text-muted-foreground'>Nenhuma mídia anexada.</p>}
-                        </div>
+                            </div>
+                        ) : <p className='text-xs text-muted-foreground'>Nenhuma mídia anexada.</p>}
                     </div>
                     <div>
                         <strong className='block text-muted-foreground mb-2'>Banco de dados salvo no PC?</strong>
@@ -495,5 +497,3 @@ export function ReportList() {
     </div>
   );
 }
-
-    
