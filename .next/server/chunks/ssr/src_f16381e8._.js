@@ -21,9 +21,11 @@ const ACCEPTED_MEDIA_TYPES = [
     "video/quicktime",
     "video/webm"
 ];
-const ACCEPTED_ZIP_TYPES = [
+const ACCEPTED_ARCHIVE_TYPES = [
     "application/zip",
-    "application/x-zip-compressed"
+    "application/x-zip-compressed",
+    "application/x-rar-compressed",
+    "application/vnd.rar"
 ];
 const fileSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].any().refine((file)=>!file || file.size <= MAX_FILE_SIZE_IN_BYTES, {
     message: `O tamanho máximo do arquivo é 1MB.`
@@ -34,7 +36,7 @@ const reportSchema = __TURBOPACK__imported__module__$5b$project$5d2f$node_module
     errorDate: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].string().min(1, 'Data do erro é obrigatória.'),
     reportText: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].string().min(1, 'O relatório detalhado é obrigatório.'),
     mediaFile: fileSchema.refine((file)=>!file || ACCEPTED_MEDIA_TYPES.includes(file.type), 'Apenas formatos de imagem e vídeo são aceitos.'),
-    zipFile: fileSchema.refine((file)=>!file || ACCEPTED_ZIP_TYPES.includes(file.type), 'Apenas arquivos .zip são aceitos.'),
+    zipFile: fileSchema.refine((file)=>!file || ACCEPTED_ARCHIVE_TYPES.includes(file.type), 'Apenas arquivos .zip ou .rar são aceitos.'),
     reportedByUserId: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].string(),
     status: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$zod$2f$lib$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["z"].enum([
         'open',
@@ -877,7 +879,7 @@ function ErrorReportForm() {
                                 className: "pt-4 border-t border-border",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormLabel"], {
-                                        children: "Arquivo Zipado do Banco de Dados (.zip)"
+                                        children: "Arquivo do Banco de Dados (.zip, .rar)"
                                     }, void 0, false, {
                                         fileName: "[project]/src/components/error-report-form.tsx",
                                         lineNumber: 242,
@@ -886,7 +888,7 @@ function ErrorReportForm() {
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$form$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["FormControl"], {
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["Input"], {
                                             type: "file",
-                                            accept: ".zip,application/zip,application/x-zip-compressed",
+                                            accept: ".zip,.rar,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/vnd.rar",
                                             onChange: (e)=>onChange(e.target.files ? e.target.files[0] : undefined),
                                             ...rest,
                                             className: "file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"

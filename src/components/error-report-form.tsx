@@ -239,9 +239,9 @@ export function ErrorReportForm() {
           name="zipFile"
           render={({ field: { onChange, value, ...rest } }) => (
             <FormItem className="pt-4 border-t border-border">
-              <FormLabel>Arquivo Zipado do Banco de Dados (.zip)</FormLabel>
+              <FormLabel>Arquivo do Banco de Dados (.zip, .rar)</FormLabel>
               <FormControl>
-                <Input type="file" accept=".zip,application/zip,application/x-zip-compressed" onChange={(e) => onChange(e.target.files ? e.target.files[0] : undefined)} {...rest} 
+                <Input type="file" accept=".zip,.rar,application/zip,application/x-zip-compressed,application/x-rar-compressed,application/vnd.rar" onChange={(e) => onChange(e.target.files ? e.target.files[0] : undefined)} {...rest} 
                   className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
                 />
               </FormControl>
